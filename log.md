@@ -2,7 +2,7 @@ Simple document to log my thoughts during development without structuring too mu
 
 # 2026/02/20 16:34
 
-Had my first read of the Candidate project. The gist of it is to develop a ml solution based on a provided model simulating a real estate use case. Just got a new github repo for the project (using a new account - I used my main git account mostly during college and the quality of that code is really a shame).
+Had my first read of the Candidate project. The gist of it is to develop a ML solution based on a provided model simulating a real estate use case. Just got a new github repo for the project (using a new account - I used my main git account mostly during college and the quality of that code is really a shame).
 
 Due to the confidentiality and proprietary data concern in the emails, I set up a local instance of deepseek-r1 through ollama and Continue extension to use during the development. All uses will be documented here. Some of the uses expected are grammar checks for documentation, ideation for tools where my experience is low, code standardization, and test generation. 
 
@@ -20,7 +20,7 @@ The results should be presented  as **power point presentation**, structured in:
 
 A basic model to estimate value of properties was developed by the staff of Sound Realty. Our job is to create a REST endpoint that serves up model predictions for new data, and to provide guidance on how they could improve the model.
 
-A Python script has been provided (create_model.py) which***trains the basic model**. The data used to train
+A Python script has been provided (create_model.py) which **trains the basic model**. The data used to train
 the model is in the data directory, which includes:
 
 * data/kc_house_data.csv – Data for training the model. Each row corresponds to a sold home. price is the
@@ -52,12 +52,12 @@ additional API endpoint where only the required features have to be provided in 
 taken from data/future_unseen_examples.csv.
 * Evaluate the performance of the model. You should start with the code in create_model.py and try to figure out
 how well the model will generalize to new data. Has the model appropriately fit the dataset?
-*  Improve the model by applying some basic machine-learning principles. We're not interested in in getting the
+* Improve the model by applying some basic machine-learning principles. We're not interested in getting the
 absolute best predictive performance for the model, don't devote too much time to this step. This is not a Kaggle
 competition. Rather we're interested in your understanding of data science concepts and your ability explain the
 decisions you made.
 
-## Recomendations 
+## Recommendations
 
 * use Docker to containerize and deploy the model.
 * do some web searching to figure out what other components are needed to deploy a scaleable REST API for a Python application.
@@ -70,7 +70,7 @@ Watching the provided instruction video:
 * Expectations:
   * simulate real work
   * not a perfect solution
-  * how do you comunicate
+  * how do you communicate
 * Make suggestions to improve the model
 * presentation
   * business audience
@@ -114,3 +114,13 @@ Checking the .csv files, the data seems ok (clean, no strange data or formatting
 Just added my data exploration considerations to the exploration folder.
 
 Was looking to the code and saw that there are some strange variable instantiations and uses. Will start to branch out. 
+
+
+# 2026/02/21 12:38
+
+Just read the create_model.py with care. My considerations:
+* there were some unused variables and bad stantiations. I just cleaned that
+* pyright was complaining about iterables and I ignored. Pretty common on pandas
+* The Robust Scaller is a bazooka to kill a fly here, but it managed my worst fear of underfitting with KNN.
+* The use of default settings on KNN is amateurish and would be the first thing to try out changing
+* The training step already makes separations for test. But no testing. I will change that later.
