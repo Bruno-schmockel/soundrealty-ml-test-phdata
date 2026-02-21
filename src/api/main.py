@@ -1,5 +1,4 @@
-"""FastAPI application for Sound Realty model predictions."""
-
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 import logging
 
@@ -16,13 +15,6 @@ from .prediction_service import PredictionService
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize FastAPI app
-app = FastAPI(
-    title="Sound Realty Prediction API",
-    description="REST API for predicting home prices using an ML model",
-    version="1.0.0"
-)
-
 # Initialize prediction service
 prediction_service = PredictionService(
     model_path="model/model.pkl",
@@ -31,9 +23,10 @@ prediction_service = PredictionService(
 )
 
 
-@app.on_event("startup")
-async def startup_event():
-    """Load model and data on startup."""
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Load model and data on startup, cleanup on shutdown."""
+    # Startup code
     try:
         logger.info("Loading model...")
         prediction_service.load_model()
@@ -41,10 +34,24 @@ async def startup_event():
         prediction_service.load_features()
         logger.info("Loading demographics data...")
         prediction_service.data_loader.load_demographics()
-        logger.info("✓ All models and data loaded successfully")
+        logger.info("All models and data loaded successfully")
     except Exception as e:
-        logger.error(f"Failed to load model: {e}")
+        logger.error(f"Failed to load: {e}")
         raise
+    
+    yield
+    
+    # Shutdown code (cleanup if needed)
+    logger.info("Shutting down API")
+
+
+# Initialize FastAPI app with lifespan
+app = FastAPI(
+    title="Sound Realty Prediction API",
+    description="REST API for predicting home prices using an ML model",
+    version="1.0.0",
+    lifespan=lifespan
+)
 
 
 @app.get("/health", response_model=HealthResponse)
@@ -65,14 +72,14 @@ async def predict(request: PredictionRequest):
     This endpoint accepts all available features including zipcode,
     automatically joins demographic data, and returns a price prediction.
     """
-    try:
-        # Validate zipcode exists in demographics
-        if not prediction_service.data_loader.is_valid_zipcode(request.zipcode):
-            raise HTTPException(
-                status_code=400,
-                detail=f"Zipcode {request.zipcode} not found in demographics database"
-            )
+    # Validate zipcode exists in demographics
+    if not prediction_service.data_loader.is_valid_zipcode(request.zipcode):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Zipcode {request.zipcode} not found in demographics database"
+        )
 
+    try:
         # Make prediction
         result = prediction_service.predict(
             bedrooms=request.bedrooms,
@@ -109,15 +116,15 @@ async def predict_minimal(request: PredictionMinimalRequest):
     Bonus endpoint: accepts only the core features required by the model,
     automatically joins demographic data by zipcode.
     """
-    try:
-        # Validate zipcode exists in demographics
-        if not prediction_service.data_loader.is_valid_zipcode(request.zipcode):
-            raise HTTPException(
-                status_code=400,
-                detail=f"Zipcode {request.zipcode} not found in demographics database"
-            )
+    # Validate zipcode exists in demographics
+    if not prediction_service.data_loader.is_valid_zipcode(request.zipcode):
+        raise HTTPException(
+            status_code=400,
+            detail=f"Zipcode {request.zipcode} not found in demographics database"
+        )
 
-        # Make prediction
+    try:
+        # Make prediction with default values for optional fields
         result = prediction_service.predict(
             bedrooms=request.bedrooms,
             bathrooms=request.bathrooms,
@@ -156,18 +163,8 @@ async def reload_model():
     try:
         logger.info("Reloading model...")
         prediction_service.reload_model()
-        logger.info("✓ Model reloaded successfully")
+        logger.info("Model reloaded successfully")
         return {"status": "success", "message": "Model reloaded"}
     except Exception as e:
         logger.error(f"Failed to reload model: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to reload model: {str(e)}")
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8000,
-        log_level="info"
-    )

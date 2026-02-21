@@ -85,7 +85,7 @@ class PredictionService:
             Dictionary with prediction and metadata
             
         Raises:
-            ValueError: If model is not loaded or zipcode is invalid
+            RuntimeError: If model is not loaded
             KeyError: If required features are missing
         """
         # Lazy load model and features if not already loaded
