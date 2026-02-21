@@ -38,7 +38,7 @@ def load_data(
 
     """
     data = pandas.read_csv(sales_path,
-                           usecols=sales_column_selection, 
+                           usecols=sales_column_selection, # pyright: ignore[reportArgumentType]
                            dtype={'zipcode': str})
     demographics = pandas.read_csv(demographics_path,
                                    dtype={'zipcode': str})
