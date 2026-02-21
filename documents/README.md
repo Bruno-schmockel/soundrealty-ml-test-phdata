@@ -1,4 +1,4 @@
-![phData Logo](phData.png "phData Logo")
+![phData Logo](images/phData.png "phData Logo")
 
 # phData Machine Learning Engineer Candidate Project
 
