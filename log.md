@@ -102,5 +102,11 @@ Watching the provided instruction video:
   * Ask
     * what motivates and interest them
 
+# 2026/02/21 09:13 
+
+Installed the conda enviroment and executed the `create_model.py` script. 
+
+Checking the .csv files, the data seems ok (clean, no strange data or formmating). You run a simple exploration to understand it. 
+
 
 
