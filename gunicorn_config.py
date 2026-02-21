@@ -4,9 +4,6 @@ This config file can be used as:
     gunicorn -c gunicorn_config.py src.api.main:app
 """
 
-import multiprocessing
-import os
-
 # Server Configuration
 bind = "0.0.0.0:8000"
 backlog = 2048
