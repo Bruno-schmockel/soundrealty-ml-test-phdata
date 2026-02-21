@@ -119,8 +119,20 @@ Was looking to the code and saw that there are some strange variable instantiati
 # 2026/02/21 12:38
 
 Just read the create_model.py with care. My considerations:
-* there were some unused variables and bad stantiations. I just cleaned that
-* pyright was complaining about iterables and I ignored. Pretty common on pandas
+* there were some unused variables and bad stantiations. I just cleaned that.
+* pyright was complaining about iterables and I ignored. Pretty common on pandas.
 * The Robust Scaller is a bazooka to kill a fly here, but it managed my worst fear of underfitting with KNN.
-* The use of default settings on KNN is amateurish and would be the first thing to try out changing
+* The use of default settings on KNN is amateurish and would be the first thing to try out changing.
 * The training step already makes separations for test. But no testing. I will change that later.
+
+# 2026/02/21 16:23
+Added a model evaluation step to the current model. Decided to keep it with training as to use same train/test split for reference.
+
+Most of the code was machine generated, for speed reasons. Added a weighted RMSE metric that punishes underpricing (execs love this one trick).
+
+Don't have the area specific knowledge (not much experience in pricing), but 100k of mean error looks bad.
+
+* RMSE (Root Mean Squared Error) - The most common metric for price prediction. Penalizes larger errors more heavily, which matters for price predictions.
+* MAE (Mean Absolute Error) - Easier to interpret (average dollar amount the model is off by)
+* R² (Coefficient of Determination) - Shows what percentage of price variance the model explains (0-1 scale, higher is better)
+* MAPE (Mean Absolute Percentage Error) - Useful for understanding error as a percentage of actual prices
