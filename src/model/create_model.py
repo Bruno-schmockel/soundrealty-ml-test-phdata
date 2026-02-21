@@ -27,7 +27,7 @@ def load_data(
 
     Args:
         sales_path: path to CSV file with home sale data
-        demographics_path: path to CSV file with home sale data
+        demographics_path: path to CSV file with demographics data
         sales_column_selection: list of columns from sales data to be used as
             features
 
@@ -38,9 +38,9 @@ def load_data(
 
     """
     data = pandas.read_csv(sales_path,
-                           usecols=sales_column_selection,
+                           usecols=sales_column_selection, 
                            dtype={'zipcode': str})
-    demographics = pandas.read_csv("data/zipcode_demographics.csv",
+    demographics = pandas.read_csv(demographics_path,
                                    dtype={'zipcode': str})
 
     merged_data = data.merge(demographics, how="left",
