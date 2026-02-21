@@ -119,9 +119,9 @@ Was looking to the code and saw that there are some strange variable instantiati
 # 2026/02/21 12:38
 
 Just read the create_model.py with care. My considerations:
-* there were some unused variables and bad stantiations. I just cleaned that.
+* there were some unused variables and bad instantiations. I just cleaned that.
 * pyright was complaining about iterables and I ignored. Pretty common on pandas.
-* The Robust Scaller is a bazooka to kill a fly here, but it managed my worst fear of underfitting with KNN.
+* The Robust Scaler is a bazooka to kill a fly here, but it managed my worst fear of underfitting with KNN.
 * The use of default settings on KNN is amateurish and would be the first thing to try out changing.
 * The training step already makes separations for test. But no testing. I will change that later.
 
@@ -133,6 +133,13 @@ Most of the code was machine generated, for speed reasons. Added a weighted RMSE
 Don't have the area specific knowledge (not much experience in pricing), but 100k of mean error looks bad.
 
 * RMSE (Root Mean Squared Error) - The most common metric for price prediction. Penalizes larger errors more heavily, which matters for price predictions.
-* MAE (Mean Absolute Error) - Easier to interpret (average dollar amount the model is off by)
-* R² (Coefficient of Determination) - Shows what percentage of price variance the model explains (0-1 scale, higher is better)
-* MAPE (Mean Absolute Percentage Error) - Useful for understanding error as a percentage of actual prices
+* MAE (Mean Absolute Error) - Easier to interpret (average dollar amount the model is off by).
+* R2 (Coefficient of Determination) - Shows what percentage of price variance the model explains (0-1 scale, higher is better).
+* MAPE (Mean Absolute Percentage Error) - Useful for understanding error as a percentage of actual prices.
+
+Added a release tag so I can return to this point to get data for the presentation.
+
+Made some tests with grid search and ridge regression, but the current model seems a good enough kitchen sink approach. Meddling with hyperparameters seems to
+worsen too much in the overfitting side. 
+
+Best next step for increase model performance are feature engineering or using a more powerful approach like XGB. Prune the data to not use everything at once can help.
