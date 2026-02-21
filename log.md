@@ -76,7 +76,7 @@ Watching the provided instruction video:
   * business audience
     * real estate professionals
     * explain the value
-    * how it will fit in the processess
+    * how it will fit in the processes
     * focus on the value and outcomes
   * technical audience
     * have fun
@@ -143,3 +143,22 @@ Made some tests with grid search and ridge regression, but the current model see
 worsen too much in the overfitting side. 
 
 Best next step for increase model performance are feature engineering or using a more powerful approach like XGB. Prune the data to not use everything at once can help.
+
+# 2026/02/21 20:18
+
+After a quick research decided to use the fastapi library for the REST API implementation. It was my first time using it, so I gave the directions to copilot, 
+and them spent an hour understanding what the code does and how. There are some changes I want to try later.
+
+* reduce latency in the load model. 
+* add a more robust approach to the demographics data load
+* make a second pass of the code for cleaning
+* improve the ability to update the model on the fly
+
+for next step: 
+* including proper docker and containerization
+* try to improve the model so I have different versions to change 
+* Review the tests
+
+Generated a full pytest battery and fixed the issues that showed with testing. Need to comb through the code later.
+
+Been putting half an hour at the time in each log and got a little tired xD.
