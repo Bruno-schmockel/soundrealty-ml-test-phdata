@@ -4,7 +4,7 @@ Simple document to log my thoughts during development without structuring too mu
 
 Had my first read of the Candidate project. The gist of it is to develop a ml solution based on a provided model simulating a real estate use case. Just got a new github repo for the project (using a new account - I used my main git account mostly during college and the quality of that code is really a shame).
 
-Due to the confidentiality and proprietary data concern in the emails, I set up a local instance of deepseek-r1 through ollama and Continue extension to use during the development. All uses will be documented here. Some of the uses expected are grammar checks for documentation, ideation for tools where my experience is low, code standatization, and test generation. 
+Due to the confidentiality and proprietary data concern in the emails, I set up a local instance of deepseek-r1 through ollama and Continue extension to use during the development. All uses will be documented here. Some of the uses expected are grammar checks for documentation, ideation for tools where my experience is low, code standardization, and test generation. 
 
 Some points of attention from the original project description:
 
@@ -37,9 +37,9 @@ The model artifacts will be saved in a directory called model/ with the followin
 * model/model_features.json – The features required for the model to make a prediction, in the order they were
 passed during training.
 
-Aconda enviroment YAML has been provided: conda_environment.yml
+Anaconda environment YAML has been provided: conda_environment.yml
 
-## Delivereables
+## Deliverables
 *  Deploy the model as an endpoint on a RESTful service which receives JSON POST data
    * Inputs to this endpoint should be the columns in data/future_unseen_examples.csv
    * The endpoint should return a JSON object with a prediction, as well as any metadata necessary.
@@ -71,10 +71,10 @@ Watching the provided instruction video:
   * simulate real work
   * not a perfect solution
   * how do you comunicate
-* Make sugestions to improve the model
+* Make suggestions to improve the model
 * presentation
   * business audience
-    * real state professionals
+    * real estate professionals
     * explain the value
     * how it will fit in the processess
     * focus on the value and outcomes
@@ -88,7 +88,7 @@ Watching the provided instruction video:
     * measure performance
     * tradeoffs
     * architecture choices
-    * real world considetations
+    * real world considerations
     * deployment 
     * security
     * MLOPS practices (model registry, CI/CD, feature stores)
@@ -104,9 +104,13 @@ Watching the provided instruction video:
 
 # 2026/02/21 09:13 
 
-Installed the conda enviroment and executed the `create_model.py` script. 
+Installed the conda environment and executed the `create_model.py` script. 
 
-Checking the .csv files, the data seems ok (clean, no strange data or formmating). You run a simple exploration to understand it. 
+Checking the .csv files, the data seems ok (clean, no strange data or formatting). I ran a simple exploration to understand it. 
 
 
+# 2026/02/21 11:49
 
+Just added my data exploration considerations to the exploration folder.
+
+Was looking to the code and saw that there are some strange variable instantiations and uses. Will start to branch out. 
