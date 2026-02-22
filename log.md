@@ -60,7 +60,7 @@ decisions you made.
 ## Recommendations
 
 * use Docker to containerize and deploy the model.
-* do some web searching to figure out what other components are needed to deploy a scaleable REST API for a Python application.
+* do some web searching to figure out what other components are needed to deploy a scalable REST API for a Python application.
 
 # 2026/02/20 17:30
 
@@ -86,12 +86,12 @@ Watching the provided instruction video:
     * How to scale
     * how to update
     * measure performance
-    * tradeoffs
+    * trade-offs
     * architecture choices
     * real world considerations
     * deployment 
     * security
-    * MLOPS practices (model registry, CI/CD, feature stores)
+    * MLOps practices (model registry, CI/CD, feature stores)
   * key takeaways
     * simple first
     * balance your presentation
@@ -100,7 +100,7 @@ Watching the provided instruction video:
     * show mindset 
     * cultural alignment
   * Ask
-    * what motivates and interest them
+    * what motivates and interests them
 
 # 2026/02/21 09:13 
 
@@ -113,7 +113,7 @@ Checking the .csv files, the data seems ok (clean, no strange data or formatting
 
 Just added my data exploration considerations to the exploration folder.
 
-Was looking to the code and saw that there are some strange variable instantiations and uses. Will start to branch out. 
+Was looking at the code and saw that there are some strange variable instantiations and uses. Will start to branch out. 
 
 
 # 2026/02/21 12:38
@@ -139,15 +139,14 @@ Don't have the area specific knowledge (not much experience in pricing), but 100
 
 Added a release tag so I can return to this point to get data for the presentation.
 
-Made some tests with grid search and ridge regression, but the current model seems a good enough kitchen sink approach. Meddling with hyperparameters seems to
-worsen too much in the overfitting side. 
+Made some tests with grid search and ridge regression, but the current model seems a good enough kitchen sink approach. Meddling with hyperparameters seems to worsen too much in the overfitting side. 
 
 Best next step for increase model performance are feature engineering or using a more powerful approach like XGB. Prune the data to not use everything at once can help.
 
 # 2026/02/21 20:18
 
 After a quick research decided to use the fastapi library for the REST API implementation. It was my first time using it, so I gave the directions to copilot, 
-and them spent an hour understanding what the code does and how. There are some changes I want to try later.
+and then spent an hour understanding what the code does and how. There are some changes I want to try later.
 
 * reduce latency in the load model. 
 * add a more robust approach to the demographics data load
@@ -161,4 +160,9 @@ for next step:
 
 Generated a full pytest battery and fixed the issues that showed with testing. Need to comb through the code later.
 
-Been putting half an hour at the time in each log and got a little tired xD.
+Been putting half an hour at a time in each log and got a little tired xD.
+
+
+# 2026/02/22 09:14
+
+Updated the use of the demographics dataframe to a dictionary for optimization. Removed redundant code that validated zip_codes, and reworked the tests to correspond to changes
