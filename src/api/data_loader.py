@@ -15,23 +15,26 @@ class DataLoader:
             demographics_path: Path to demographics CSV file
         """
         self.demographics_path = pathlib.Path(demographics_path)
-        self._demographics: Optional[pandas.DataFrame] = None
+        self._demographics_by_zipcode: Optional[dict] = None
 
-    def load_demographics(self) -> pandas.DataFrame:
-        """Load demographics data, caching for subsequent calls.
+    def load_demographics(self) -> None:
+        """Load demographics data from CSV into memory-efficient dictionary.
         
-        Returns:
-            DataFrame with demographics data indexed by zipcode
+        Converts CSV to dict with zipcode as key for O(1) lookups.
         """
-        if self._demographics is None:
-            self._demographics = pandas.read_csv(
+        if self._demographics_by_zipcode is None:
+            # Load DataFrame, convert to dict, then discard DataFrame
+            df = pandas.read_csv(
                 self.demographics_path,
                 dtype={'zipcode': str}
             )
-        return self._demographics
+            self._demographics_by_zipcode = {
+                row['zipcode']: row.to_dict() 
+                for _, row in df.iterrows()
+            }
 
     def get_demographics_for_zipcode(self, zipcode: str) -> Optional[dict]:
-        """Get demographics data for a specific zipcode.
+        """Get demographics data for a specific zipcode (O(1) lookup).
         
         Args:
             zipcode: 5-digit zipcode string
@@ -39,29 +42,22 @@ class DataLoader:
         Returns:
             Dictionary of demographics data or None if zipcode not found
         """
-        demographics = self.load_demographics()
-        
-        # Filter by zipcode
-        zipcode_data = demographics[demographics['zipcode'] == zipcode]
-        
-        if zipcode_data.empty:
-            return None
-        
-        return zipcode_data.iloc[0].to_dict()
+        self.load_demographics()  # Ensure dict is populated
+        assert self._demographics_by_zipcode is not None
+        return self._demographics_by_zipcode.get(zipcode)
 
-    def is_valid_zipcode(self, zipcode: str) -> bool:
-        """Check if a zipcode exists in the demographics data.
+    def is_valid_zipcode(self, zipcode: str) -> Optional[dict]:
+        """Check if zipcode exists and return its demographics data (O(1)).
         
         Args:
             zipcode: 5-digit zipcode string
             
         Returns:
-            True if zipcode exists, False otherwise
+            Dictionary of demographics data if found, None if zipcode not found
         """
-        demographics = self.load_demographics()
-        return zipcode in demographics['zipcode'].values
+        return self.get_demographics_for_zipcode(zipcode)
 
     def reload_demographics(self) -> None:
         """Force reload of demographics data from disk."""
-        self._demographics = None
+        self._demographics_by_zipcode = None
         self.load_demographics()

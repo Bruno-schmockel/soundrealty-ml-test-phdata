@@ -1,7 +1,7 @@
 """Pydantic models for API request/response validation."""
 
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PredictionRequest(BaseModel):
@@ -24,9 +24,9 @@ class PredictionRequest(BaseModel):
     long: float = Field(..., description="Longitude")
     sqft_living15: int = Field(..., description="Living area of 15 nearest neighbors")
     sqft_lot15: int = Field(..., description="Lot area of 15 nearest neighbors")
-
-    class Config:
-        json_schema_extra = {
+    
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "bedrooms": 3,
                 "bathrooms": 2.0,
@@ -48,6 +48,7 @@ class PredictionRequest(BaseModel):
                 "sqft_lot15": 5000
             }
         }
+    )
 
 
 class PredictionMinimalRequest(BaseModel):
@@ -60,9 +61,9 @@ class PredictionMinimalRequest(BaseModel):
     sqft_above: int = Field(..., description="Square footage above ground")
     sqft_basement: int = Field(..., description="Square footage of basement")
     zipcode: str = Field(..., description="5-digit zipcode")
-
-    class Config:
-        json_schema_extra = {
+    
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "bedrooms": 3,
                 "bathrooms": 2.0,
@@ -74,6 +75,7 @@ class PredictionMinimalRequest(BaseModel):
                 "zipcode": "98001"
             }
         }
+    )
 
 
 class PredictionResponse(BaseModel):
@@ -81,15 +83,16 @@ class PredictionResponse(BaseModel):
     prediction: float = Field(..., description="Predicted home price in USD")
     model_version: str = Field(..., description="Version of the model used")
     confidence: Optional[float] = Field(None, description="Confidence score (0-1)")
-
-    class Config:
-        json_schema_extra = {
+    
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "prediction": 425000.50,
                 "model_version": "1.0.0",
                 "confidence": 0.85
             }
         }
+    )
 
 
 class HealthResponse(BaseModel):

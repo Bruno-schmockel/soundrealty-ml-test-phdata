@@ -60,7 +60,7 @@ async def health_check():
     return {
         "status": "healthy",
         "model_loaded": prediction_service._model is not None,
-        "demographics_loaded": prediction_service.data_loader._demographics is not None
+        "demographics_loaded": prediction_service.data_loader._demographics_by_zipcode is not None
     }
 
 
@@ -72,8 +72,9 @@ async def predict(request: PredictionRequest):
     This endpoint accepts all available features including zipcode,
     automatically joins demographic data, and returns a price prediction.
     """
-    # Validate zipcode exists in demographics
-    if not prediction_service.data_loader.is_valid_zipcode(request.zipcode):
+    # Validate zipcode and get demographics in one call
+    zipcode_demo = prediction_service.data_loader.get_demographics_for_zipcode(request.zipcode)
+    if zipcode_demo is None:
         raise HTTPException(
             status_code=400,
             detail=f"Zipcode {request.zipcode} not found in demographics database"
@@ -116,8 +117,9 @@ async def predict_minimal(request: PredictionMinimalRequest):
     Bonus endpoint: accepts only the core features required by the model,
     automatically joins demographic data by zipcode.
     """
-    # Validate zipcode exists in demographics
-    if not prediction_service.data_loader.is_valid_zipcode(request.zipcode):
+    # Validate zipcode and get demographics in one call
+    zipcode_demo = prediction_service.data_loader.get_demographics_for_zipcode(request.zipcode)
+    if zipcode_demo is None:
         raise HTTPException(
             status_code=400,
             detail=f"Zipcode {request.zipcode} not found in demographics database"

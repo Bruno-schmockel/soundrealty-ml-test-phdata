@@ -196,11 +196,17 @@ class TestDataLoaderIntegration:
     def test_demographics_loading(self):
         """Test that demographics are loaded correctly."""
         service = PredictionService()
-        demographics = service.data_loader.load_demographics()
+        service.data_loader.load_demographics()
         
-        assert demographics is not None
-        assert len(demographics) > 0
-        assert "zipcode" in demographics.columns
+        # Check that internal dict is populated
+        assert service.data_loader._demographics_by_zipcode is not None
+        assert len(service.data_loader._demographics_by_zipcode) > 0
+        
+        # Verify we can get demographics for a known zipcode
+        sample_zipcode = list(service.data_loader._demographics_by_zipcode.keys())[0]
+        sample_data = service.data_loader._demographics_by_zipcode[sample_zipcode]
+        assert isinstance(sample_data, dict)
+        assert "zipcode" in sample_data
     
     def test_valid_zipcode_check(self):
         """Test valid zipcode checking."""

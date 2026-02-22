@@ -101,8 +101,13 @@ class PredictionService:
         assert self._model is not None
         assert self._features is not None
 
-        # Create input dataframe with initial features
-        input_data = pandas.DataFrame([{
+        # Get demographics data for zipcode (O(1) dict lookup)
+        zipcode_demo = self.data_loader.get_demographics_for_zipcode(zipcode)
+        if zipcode_demo is None:
+            raise ValueError(f"Zipcode {zipcode} not found in demographics database")
+
+        # Combine input features with demographics into single dict
+        input_dict = {
             'bedrooms': bedrooms,
             'bathrooms': bathrooms,
             'sqft_living': sqft_living,
@@ -110,24 +115,17 @@ class PredictionService:
             'floors': floors,
             'sqft_above': sqft_above,
             'sqft_basement': sqft_basement,
-            'zipcode': zipcode
-        }])
+        }
+        
+        # Add demographics fields (excluding zipcode which is not a model feature)
+        for key, value in zipcode_demo.items():
+            if key != 'zipcode':
+                input_dict[key] = value
 
-        # Join with demographics
-        demographics = self.data_loader.load_demographics()
-        input_data = input_data.merge(
-            demographics,
-            on='zipcode',
-            how='left'
-        )
-
-        # Remove zipcode (was used for merging, not a model feature)
-        if 'zipcode' in input_data.columns:
-            input_data = input_data.drop(columns=['zipcode'])
-
-        # Reorder columns to match training order
+        # Get features in correct order and create DataFrame with only required columns
         features = self.load_features()
-        input_data = input_data[features]
+        input_data = pandas.DataFrame([{feature: input_dict.get(feature) for feature in features}])
+
 
         # Make prediction
         prediction = self._model.predict(input_data)[0]
