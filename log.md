@@ -141,7 +141,7 @@ Added a release tag so I can return to this point to get data for the presentati
 
 Made some tests with grid search and ridge regression, but the current model seems a good enough kitchen sink approach. Meddling with hyperparameters seems to worsen too much in the overfitting side. 
 
-Best next step for increase model performance are feature engineering or using a more powerful approach like XGB. Prune the data to not use everything at once can help.
+Best next step for improving model performance are feature engineering or using a more powerful approach like XGB. Prune the data to not use everything at once can help.
 
 # 2026/02/21 20:18
 
@@ -165,4 +165,8 @@ Been putting half an hour at a time in each log and got a little tired xD.
 
 # 2026/02/22 09:14
 
-Updated the use of the demographics dataframe to a dictionary for optimization. Removed redundant code that validated zip_codes, and reworked the tests to correspond to changes
+Updated the use of the demographics dataframe to a dictionary for optimization. Removed redundant code that validated zip_codes, and reworked the tests to correspond to changes.
+
+The choice of use a dictionary instead of a database is that a quick google search suggests that are approximately 100 zipcodes for the greater Seattle area. Should the data be 
+larger or be alive somehow (batch updated/hot) a database would be necessary. You can argue that the model would need to be update after a new census, but for a real estate 
+company, maintain a db or have to update the model files would be equally hard (expecting that it would run as is till forever). 
