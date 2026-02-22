@@ -43,7 +43,8 @@ class DataLoader:
             Dictionary of demographics data or None if zipcode not found
         """
         self.load_demographics()  # Ensure dict is populated
-        assert self._demographics_by_zipcode is not None
+        if self._demographics_by_zipcode is None:
+            raise ValueError("Demographics data not loaded")
         return self._demographics_by_zipcode.get(zipcode)
 
     def is_valid_zipcode(self, zipcode: str) -> Optional[dict]:

@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 prediction_service = PredictionService(
     model_path="model/model.pkl",
     features_path="model/model_features.json",
+    features_types_path="model/model_features_with_types.json",
     demographics_path="data/zipcode_demographics.csv"
 )
 
@@ -32,6 +33,8 @@ async def lifespan(app: FastAPI):
         prediction_service.load_model()
         logger.info("Loading features...")
         prediction_service.load_features()
+        logger.info("Loading feature types...")
+        prediction_service.load_feature_types()
         logger.info("Loading demographics data...")
         prediction_service.data_loader.load_demographics()
         logger.info("All models and data loaded successfully")
@@ -81,18 +84,20 @@ async def predict(request: PredictionRequest):
         )
 
     try:
+        # Build input data dynamically from request fields
+        input_data = request.model_dump()
+        # Remove zipcode as it's not a model feature, but get demographics instead
+        del input_data['zipcode']
+        # Add demographics fields
+        for key, value in zipcode_demo.items():
+            if key != 'zipcode':
+                input_data[key] = value
+        
+        # Validate input data against model features
+        prediction_service.validate_input(input_data)
+        
         # Make prediction
-        result = prediction_service.predict(
-            bedrooms=request.bedrooms,
-            bathrooms=request.bathrooms,
-            sqft_living=request.sqft_living,
-            sqft_lot=request.sqft_lot,
-            floors=request.floors,
-            sqft_above=request.sqft_above,
-            sqft_basement=request.sqft_basement,
-            zipcode=request.zipcode
-        )
-
+        result = prediction_service.predict_from_dict(input_data)
         return result
 
     except ValueError as e:
@@ -126,18 +131,20 @@ async def predict_minimal(request: PredictionMinimalRequest):
         )
 
     try:
-        # Make prediction with default values for optional fields
-        result = prediction_service.predict(
-            bedrooms=request.bedrooms,
-            bathrooms=request.bathrooms,
-            sqft_living=request.sqft_living,
-            sqft_lot=request.sqft_lot,
-            floors=request.floors,
-            sqft_above=request.sqft_above,
-            sqft_basement=request.sqft_basement,
-            zipcode=request.zipcode
-        )
-
+        # Build input data dynamically from request fields
+        input_data = request.model_dump()
+        # Remove zipcode as it's not a model feature, but get demographics instead
+        del input_data['zipcode']
+        # Add demographics fields
+        for key, value in zipcode_demo.items():
+            if key != 'zipcode':
+                input_data[key] = value
+        
+        # Validate input data against model features
+        prediction_service.validate_input(input_data)
+        
+        # Make prediction
+        result = prediction_service.predict_from_dict(input_data)
         return result
 
     except ValueError as e:
@@ -161,12 +168,14 @@ async def reload_model():
     
     Allows deployment of new model versions without downtime.
     This endpoint can be called by a deployment system when a new model is available.
+    Also reloads demographics data to ensure consistency.
     """
     try:
         logger.info("Reloading model...")
+        logger.info("Reloading demographics data...")
         prediction_service.reload_model()
-        logger.info("Model reloaded successfully")
-        return {"status": "success", "message": "Model reloaded"}
+        logger.info("Model and data reloaded successfully")
+        return {"status": "success", "message": "Model and data reloaded"}
     except Exception as e:
         logger.error(f"Failed to reload model: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to reload model: {str(e)}")

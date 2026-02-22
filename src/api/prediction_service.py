@@ -4,6 +4,7 @@ import json
 import pathlib
 import pickle
 from typing import Optional, List, Dict, Any
+import numpy as np
 import pandas
 
 from .data_loader import DataLoader
@@ -16,6 +17,7 @@ class PredictionService:
         self,
         model_path: str = "model/model.pkl",
         features_path: str = "model/model_features.json",
+        features_types_path: str = "model/model_features_with_types.json",
         demographics_path: str = "data/zipcode_demographics.csv"
     ):
         """Initialize prediction service.
@@ -23,14 +25,17 @@ class PredictionService:
         Args:
             model_path: Path to pickled model file
             features_path: Path to JSON file with feature names
+            features_types_path: Path to JSON file with feature names and their data types
             demographics_path: Path to demographics CSV file
         """
         self.model_path = pathlib.Path(model_path)
         self.features_path = pathlib.Path(features_path)
+        self.features_types_path = pathlib.Path(features_types_path)
         self.data_loader = DataLoader(demographics_path)
         
         self._model = None
         self._features: Optional[List[str]] = None
+        self._feature_types: Optional[Dict[str, str]] = None
         self._model_version = "1.0.0"
 
     def load_model(self) -> None:
@@ -46,9 +51,32 @@ class PredictionService:
         """
         if self._features is None:
             with open(self.features_path, 'r') as f:
-                self._features = json.load(f)
+                data = json.load(f)
+                # Handle both list format and dict format
+                # If dict, use keys as features; if list, use directly
+                if isinstance(data, dict):
+                    self._features = list(data.keys())
+                else:
+                    self._features = data
         assert self._features is not None
         return self._features
+
+    def load_feature_types(self) -> Dict[str, str]:
+        """Load feature types from JSON file.
+        
+        Returns:
+            Dictionary mapping feature names to their data types
+        """
+        if self._feature_types is None:
+            # Try to load from features_with_types file
+            try:
+                with open(self.features_types_path, 'r') as f:
+                    self._feature_types = json.load(f)
+            except FileNotFoundError:
+                # Fallback: if features_with_types doesn't exist, return empty dict
+                self._feature_types = {}
+        assert self._feature_types is not None
+        return self._feature_types
 
     def is_ready(self) -> bool:
         """Check if model and features are loaded.
@@ -137,8 +165,90 @@ class PredictionService:
         }
 
     def reload_model(self) -> None:
-        """Reload model from disk (for hot-deployment)."""
+        """Reload model and data from disk (for hot-deployment)."""
         self._model = None
         self._features = None
+        self._feature_types = None
         self.load_model()
         self.load_features()
+        self.load_feature_types()
+        self.data_loader.reload_demographics()
+
+    def validate_input(self, input_dict: dict) -> None:
+        """Validate that all required model features are present in input with correct types.
+        
+        Args:
+            input_dict: Dictionary of input values
+            
+        Raises:
+            ValueError: If required features are missing, have None values, or have wrong types
+        """
+        features = self.load_features()
+        feature_types = self.load_feature_types()
+        
+        # Check for missing features
+        missing_features = [f for f in features if f not in input_dict]
+        if missing_features:
+            raise ValueError(
+                f"Missing required features: {', '.join(missing_features)}. "
+                f"Expected features: {', '.join(features)}"
+            )
+        
+        # Check for None values in required fields
+        none_values = [f for f in features if input_dict.get(f) is None]
+        if none_values:
+            raise ValueError(
+                f"Invalid or missing values for features: {', '.join(none_values)}"
+            )
+        
+        # Type validation if feature types are available
+        if feature_types:
+            type_errors = []
+            for feature in features:
+                expected_type = feature_types.get(feature)
+                if expected_type:
+                    value = input_dict[feature]
+                    # Map numpy/pandas types to Python types for validation
+                    if 'int' in expected_type and not isinstance(value, (int, np.integer)):
+                        type_errors.append(f"  {feature}: expected {expected_type}, got {type(value).__name__}")
+                    elif 'float' in expected_type and not isinstance(value, (int, float, np.number)):
+                        type_errors.append(f"  {feature}: expected {expected_type}, got {type(value).__name__}")
+            
+            if type_errors:
+                raise ValueError(
+                    "Type mismatch in input data:\n" + "\n".join(type_errors)
+                )
+
+    def predict_from_dict(self, input_dict: dict) -> Dict[str, Any]:
+        """Make a prediction using a dictionary of input values.
+        
+        Assumes input has been validated. Extracts only required fields
+        and makes the prediction. This approach is independent of specific field names.
+        
+        Args:
+            input_dict: Dictionary containing all required input values (should be pre-validated)
+            
+        Returns:
+            Dictionary with prediction and metadata
+        """
+        # Extract only the features required by the model in the correct order
+        features = self.load_features()
+        ordered_features = {f: input_dict[f] for f in features}
+        
+        # Create DataFrame with features in the correct order
+        input_data = pandas.DataFrame([ordered_features])
+        
+        # Lazy load model if needed
+        if self._model is None:
+            self.load_model()
+        
+        assert self._model is not None
+        
+        # Make prediction
+        prediction = self._model.predict(input_data)[0]
+        
+        return {
+            "prediction": float(prediction),
+            "model_version": self._model_version,
+            "confidence": None
+        }

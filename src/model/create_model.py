@@ -226,10 +226,16 @@ def main():
     # Evaluate the model
     evaluate_model(model, x_train, y_train, x_test, y_test, output_dir)
 
-    # Output model artifacts: pickled model and JSON list of features
+    # Output model artifacts: pickled model and JSON list of features with datatypes
     pickle.dump(model, open(output_dir / "model.pkl", 'wb'))
-    json.dump(list(x_train.columns),
-              open(output_dir / "model_features.json", 'w'))
+    
+    # Save features as a list for model prediction order, and include datatypes
+    features_list = list(x_train.columns)
+    features_with_types = {
+        col: str(x_train[col].dtype) for col in features_list
+    }
+    
+    json.dump(features_with_types, open(output_dir / "model_features.json", 'w'), indent=2)
 
 
 if __name__ == "__main__":
