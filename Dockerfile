@@ -29,7 +29,6 @@ RUN pip install --no-cache-dir \
 COPY src/ /app/src/
 COPY model/ /app/model/
 COPY data/ /app/data/
-COPY gunicorn_config.py /app/
 
 # Create non-root user for security
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
