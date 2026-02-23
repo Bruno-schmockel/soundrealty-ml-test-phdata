@@ -1,6 +1,8 @@
 import json
 import pathlib
 import pickle
+import random
+import string
 from typing import List
 from typing import Tuple
 
@@ -212,6 +214,13 @@ def evaluate_model(model, x_train, y_train, x_test, y_test, output_dir: pathlib.
 
 def main():
     """Load data, train model, evaluate, and export artifacts."""
+    # Get model name from user
+    model_name = input("Enter the name for this model: ").strip()
+    if not model_name:
+        # Generate a random 4-letter name
+        model_name = ''.join(random.choices(string.ascii_lowercase, k=4))
+        print(f"No name provided. Generated random model name: {model_name}")
+    
     x, y = load_data(SALES_PATH, DEMOGRAPHICS_PATH, SALES_COLUMN_SELECTION)
     x_train, x_test, y_train, y_test = model_selection.train_test_split(
         x, y, random_state=42)
@@ -220,8 +229,8 @@ def main():
                                    neighbors.KNeighborsRegressor()).fit(
                                        x_train, y_train)
 
-    output_dir = pathlib.Path(OUTPUT_DIR)
-    output_dir.mkdir(exist_ok=True)
+    output_dir = pathlib.Path(OUTPUT_DIR) / model_name
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     # Evaluate the model
     evaluate_model(model, x_train, y_train, x_test, y_test, output_dir)
