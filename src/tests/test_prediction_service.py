@@ -15,35 +15,35 @@ sys.path.insert(0, str(src_path.parent))
 class TestPredictionServiceInitialization:
     """Test PredictionService initialization and loading."""
     
-    def test_service_initialization(self):
+    def test_service_initialization(self, model_name):
         """Test that service initializes without errors."""
-        service = PredictionService()
+        service = PredictionService(model_name=model_name)
         assert service._model is None
         assert service._features is None
     
-    def test_model_loading(self):
+    def test_model_loading(self, model_name):
         """Test model loading."""
-        service = PredictionService()
+        service = PredictionService(model_name=model_name)
         service.load_model()
         assert service._model is not None
     
-    def test_features_loading(self):
+    def test_features_loading(self, model_name):
         """Test features loading."""
-        service = PredictionService()
+        service = PredictionService(model_name=model_name)
         service.load_features()
         features = service.load_features()
         assert isinstance(features, list)
         assert len(features) > 0
         assert all(isinstance(f, str) for f in features)
     
-    def test_is_ready_before_loading(self):
+    def test_is_ready_before_loading(self, model_name):
         """Test is_ready returns False before loading."""
-        service = PredictionService()
+        service = PredictionService(model_name=model_name)
         assert not service.is_ready()
     
-    def test_is_ready_after_loading(self):
+    def test_is_ready_after_loading(self, model_name):
         """Test is_ready returns True after loading."""
-        service = PredictionService()
+        service = PredictionService(model_name=model_name)
         service.load_model()
         service.load_features()
         assert service.is_ready()
@@ -53,9 +53,9 @@ class TestPredictionServicePredictions:
     """Test prediction functionality."""
     
     @pytest.fixture
-    def service(self):
+    def service(self, model_name):
         """Initialize and load service."""
-        service = PredictionService()
+        service = PredictionService(model_name=model_name)
         service.load_model()
         service.load_features()
         return service
@@ -138,9 +138,9 @@ class TestPredictionServiceWithFutureExamples:
     """Test prediction service with future unseen examples."""
     
     @pytest.fixture
-    def service(self):
+    def service(self, model_name):
         """Initialize and load service."""
-        service = PredictionService()
+        service = PredictionService(model_name=model_name)
         service.load_model()
         service.load_features()
         return service
@@ -173,7 +173,7 @@ class TestPredictionServiceWithFutureExamples:
         assert min_price > 50000, "Minimum prediction seems too low"
         assert max_price < 10000000, "Maximum prediction seems too high"
     
-    def test_first_future_example(self, service: PredictionService, single_prediction: dict):
+    def test_first_future_example(self, service: PredictionService, single_prediction: dict, model_name):
         """Test prediction on first future example."""
         result = service.predict(
             bedrooms=int(single_prediction["bedrooms"]),
@@ -187,15 +187,15 @@ class TestPredictionServiceWithFutureExamples:
         )
         
         assert result["prediction"] > 0
-        assert result["model_version"] == "1.0.0"
+        assert result["model_version"] == model_name
 
 
 class TestDataLoaderIntegration:
     """Test data loader integration with prediction service."""
     
-    def test_demographics_loading(self):
+    def test_demographics_loading(self, model_name):
         """Test that demographics are loaded correctly."""
-        service = PredictionService()
+        service = PredictionService(model_name=model_name)
         service.data_loader.load_demographics()
         
         # Check that internal dict is populated
@@ -208,9 +208,9 @@ class TestDataLoaderIntegration:
         assert isinstance(sample_data, dict)
         assert "zipcode" in sample_data
     
-    def test_valid_zipcode_check(self):
+    def test_valid_zipcode_check(self, model_name):
         """Test valid zipcode checking."""
-        service = PredictionService()
+        service = PredictionService(model_name=model_name)
         service.data_loader.load_demographics()
         
         # Should accept any zipcode from the future examples

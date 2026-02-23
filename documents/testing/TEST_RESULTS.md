@@ -4,39 +4,72 @@
 ✅ **ALL 27 TESTS PASSING**
 ✅ **DOCKER CONTAINERIZATION COMPLETE**
 ✅ **API FULLY OPERATIONAL**
+✅ **MODEL VERSIONING IMPLEMENTED**
 
 - **API Endpoint Tests**: 14/14 passing ✅
 - **Prediction Service Tests**: 13/13 passing ✅  
 - **Total Coverage**: 27 test cases across all API endpoints and ML prediction logic
-- **Environment**: Python 3.9.23 (housing conda)
+- **Environment**: Python 3.13.9 (housing conda)  
 - **Docker Image**: Built and tested
 - **Container Status**: Running and healthy at http://localhost:8000
+- **Model Versioning**: Tests parameterized with `--model-name` option
 
 ---
 
 ## Test Execution
 
 ### Local Testing (Recommended for Development)
-Run the complete test suite locally:
+
+**Run tests with default model (basic):**
 ```bash
 conda activate housing
 pytest
 ```
 
-Or with verbose output:
+**Run tests with specific model version:**
+```bash
+conda activate housing
+pytest --model-name=basic
+pytest --model-name=mymodel
+```
+
+**Run with verbose output:**
 ```bash
 conda activate housing
 pytest -v
+pytest -v --model-name=basic
+```
+
+**Run with environment variable:**
+```bash
+conda activate housing
+set MODEL_NAME=basic
+pytest
 ```
 
 ### Docker Testing (For Containerized Verification)
-Run tests inside the Docker container:
+
+**Deploy container with specific model version:**
+```bash
+# Deploy with default model (basic)
+docker-compose up -d
+
+# Or deploy with specific model version
+docker-compose run -e MODEL_NAME=basic soundrealty-api
+
+# Or modify docker-compose.yml and set MODEL_NAME in environment section
+```
+
+**Run tests inside the Docker container:**
 ```bash
 # Start the container first
 docker-compose up -d
 
-# Run tests by executing them in the container
+# Run tests in the container
 docker-compose exec soundrealty-api pytest src/tests/
+
+# Run tests with specific model
+docker-compose exec soundrealty-api pytest src/tests/ --model-name=basic
 
 # Or use curl to test endpoints directly
 curl http://localhost:8000/health
@@ -46,6 +79,26 @@ curl -X POST http://localhost:8000/predict -H "Content-Type: application/json" -
 ---
 
 ## Test Coverage Details
+
+### Model Versioning Support
+
+The test suite now supports testing against different model versions through the `--model-name` pytest parameter:
+
+```bash
+# Default behavior (uses 'basic' model)
+pytest src/tests/
+
+# Test specific model version
+pytest src/tests/ --model-name=my_production_model
+pytest src/tests/ --model-name=v2.0
+```
+
+All tests receive the model name through the `model_name` fixture and verify:
+- Model loads from `model/{model_name}/model.pkl`
+- Features load from `model/{model_name}/model_features.json`
+- API correctly reports `model_version` in responses
+
+---
 
 ### API Endpoint Tests (test_api_endpoints.py)
 

@@ -198,4 +198,13 @@ Just annotating for latter. Things that I just remembered to try.
 * explicability
 * throw all variables in the model
 * change the normalization method for something more custom made
-* 
+
+# 2026/02/23 19:47
+
+Added a simple model versioning, where the artifacts are kept in the model folder. In a real scenario would mantain them in a model versioning artifact registry. maybe I will add it latter, didn't decided yet
+
+Model versions are user named to facilitate demonstration.
+
+Added a fiew more variables to the tests so I can use in diferent models 
+
+The received model is the basic model. The prediction basic always use the minimal model call.

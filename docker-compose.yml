@@ -9,6 +9,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
+      - MODEL_NAME=default
     volumes:
       - ./model:/app/model:ro
       - ./data:/app/data:ro

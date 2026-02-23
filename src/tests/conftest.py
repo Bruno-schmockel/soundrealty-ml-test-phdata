@@ -15,9 +15,39 @@ sys.path.insert(0, str(src_path))
 # Set working directory for relative paths
 os.chdir(project_root)
 
-# Import after path is set
+# Set default MODEL_NAME before importing app (will be overridden by pytest_configure if --model-name is provided)
+if 'MODEL_NAME' not in os.environ:
+    os.environ['MODEL_NAME'] = 'basic'
+
+
+def pytest_addoption(parser):
+    """Add custom command-line options to pytest."""
+    parser.addoption(
+        "--model-name",
+        action="store",
+        default=None,
+        help="Model name to use for testing (e.g., 'basic')"
+    )
+
+
+def pytest_configure(config):
+    """Configure pytest with custom options."""
+    # Get model name from --model-name option or MODEL_NAME env var, default to 'basic'
+    model_name = config.getoption("--model-name") or os.getenv('MODEL_NAME', 'basic')
+    os.environ['MODEL_NAME'] = model_name
+    # Store in config for access by fixtures
+    config.model_name = model_name
+
+
+# Import after configuration is complete
 from fastapi.testclient import TestClient  # noqa: E402
 from api.main import app  # noqa: E402
+
+
+@pytest.fixture
+def model_name(request):
+    """Get the model name being tested."""
+    return request.config.model_name
 
 
 @pytest.fixture

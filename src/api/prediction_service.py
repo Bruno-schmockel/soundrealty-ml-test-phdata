@@ -15,28 +15,48 @@ class PredictionService:
 
     def __init__(
         self,
-        model_path: str = "model/model.pkl",
-        features_path: str = "model/model_features.json",
-        features_types_path: str = "model/model_features_with_types.json",
+        model_name: str = "default",
         demographics_path: str = "data/zipcode_demographics.csv"
     ):
         """Initialize prediction service.
         
         Args:
-            model_path: Path to pickled model file
-            features_path: Path to JSON file with feature names
-            features_types_path: Path to JSON file with feature names and their data types
+            model_name: Name of the model version to use (will look in model/{model_name}/)
             demographics_path: Path to demographics CSV file
         """
-        self.model_path = pathlib.Path(model_path)
-        self.features_path = pathlib.Path(features_path)
-        self.features_types_path = pathlib.Path(features_types_path)
+        self.model_name = model_name
+        self._set_model_paths(model_name)
         self.data_loader = DataLoader(demographics_path)
         
         self._model = None
         self._features: Optional[List[str]] = None
         self._feature_types: Optional[Dict[str, str]] = None
-        self._model_version = "1.0.0"
+        self._model_version = model_name
+    
+    def _set_model_paths(self, model_name: str) -> None:
+        """Set paths based on model name.
+        
+        Args:
+            model_name: Name of the model version
+        """
+        base_path = pathlib.Path("model") / model_name
+        self.model_path = base_path / "model.pkl"
+        self.features_path = base_path / "model_features.json"
+        self.features_types_path = base_path / "model_features_with_types.json"
+    
+    def set_model_name(self, model_name: str) -> None:
+        """Set the model name and update paths accordingly.
+        
+        Args:
+            model_name: Name of the model version to use
+        """
+        self.model_name = model_name
+        self._set_model_paths(model_name)
+        self._model_version = model_name
+        # Reset loaded data so they reload from new paths
+        self._model = None
+        self._features = None
+        self._feature_types = None
 
     def load_model(self) -> None:
         """Load model from disk."""
