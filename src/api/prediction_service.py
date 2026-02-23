@@ -269,6 +269,5 @@ class PredictionService:
         
         return {
             "prediction": float(prediction),
-            "model_version": self._model_version,
-            "confidence": None
+            "model_name": self.model_name
         }

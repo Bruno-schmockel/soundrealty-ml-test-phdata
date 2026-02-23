@@ -40,7 +40,7 @@ Build the image:
 docker build -t soundrealty-api:latest .
 ```
 
-Run the container:
+Run the container with default model (added_features):
 ```bash
 docker run -d \
   --name soundrealty-api \
@@ -50,7 +50,37 @@ docker run -d \
   soundrealty-api:latest
 ```
 
+Run with a different model:
+```bash
+docker run -d \
+  --name soundrealty-api \
+  -p 8000:8000 \
+  -e MODEL_NAME=basic \
+  -v $(pwd)/model:/app/model:ro \
+  -v $(pwd)/data:/app/data:ro \
+  soundrealty-api:latest
+```
+
 ## Configuration
+
+### Model Selection
+
+The service runs with the `added_features` model by default, which includes high-correlation features:
+- `grade` (0.667 correlation with price)
+- `sqft_living15` (0.585 correlation with price)
+
+To use a different model, modify the `MODEL_NAME` environment variable in `docker-compose.yml`:
+
+```yaml
+environment:
+  - MODEL_NAME=basic  # or 'added_features' (default)
+```
+
+Then rebuild and restart:
+```bash
+docker-compose build
+docker-compose up -d
+```
 
 ### Environment Variables
 

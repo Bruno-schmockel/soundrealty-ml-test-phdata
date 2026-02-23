@@ -1,18 +1,19 @@
 # Test Suite Results & Deployment Status
 
 ## Summary
-✅ **ALL 27 TESTS PASSING**
-✅ **DOCKER CONTAINERIZATION COMPLETE**
+✅ **ALL 39 TESTS PASSING**
+✅ **MODEL SWITCHING TESTS COMPLETE**
+✅ **DOCKER CONTAINERIZATION READY**
 ✅ **API FULLY OPERATIONAL**
-✅ **MODEL VERSIONING IMPLEMENTED**
+✅ **MULTIPLE MODELS SUPPORTED**
 
 - **API Endpoint Tests**: 14/14 passing ✅
+- **Model Switching Tests**: 12/12 passing ✅
 - **Prediction Service Tests**: 13/13 passing ✅  
-- **Total Coverage**: 27 test cases across all API endpoints and ML prediction logic
-- **Environment**: Python 3.13.9 (housing conda)  
-- **Docker Image**: Built and tested
-- **Container Status**: Running and healthy at http://localhost:8000
-- **Model Versioning**: Tests parameterized with `--model-name` option
+- **Total Coverage**: 39 test cases across API endpoints, model switching, and ML prediction logic
+- **Supported Models**: `basic` and `added_features`
+- **Environment**: Python 3.9.23 (housing conda)  
+- **Test Response Format**: Simplified with `prediction` and `model_name` fields
 
 ---
 
@@ -20,31 +21,36 @@
 
 ### Local Testing (Recommended for Development)
 
-**Run tests with default model (basic):**
+**Run all tests with default model (basic):**
 ```bash
 conda activate housing
-pytest
+pytest src/tests/
 ```
 
 **Run tests with specific model version:**
 ```bash
 conda activate housing
-pytest --model-name=basic
-pytest --model-name=mymodel
+pytest src/tests/ --model-name=basic
+pytest src/tests/ --model-name=added_features
 ```
 
 **Run with verbose output:**
 ```bash
 conda activate housing
-pytest -v
-pytest -v --model-name=basic
+pytest src/tests/ -v
+pytest src/tests/ -v --model-name=added_features
 ```
 
-**Run with environment variable:**
+**Run specific test file:**
 ```bash
-conda activate housing
-set MODEL_NAME=basic
-pytest
+# Test model switching between basic and added_features
+pytest src/tests/test_model_switching.py -v
+
+# Test API endpoints
+pytest src/tests/test_api_endpoints.py -v
+
+# Test prediction service
+pytest src/tests/test_prediction_service.py -v
 ```
 
 ### Docker Testing (For Containerized Verification)
@@ -80,23 +86,27 @@ curl -X POST http://localhost:8000/predict -H "Content-Type: application/json" -
 
 ## Test Coverage Details
 
-### Model Versioning Support
+### Model Switching Tests (test_model_switching.py)
 
-The test suite now supports testing against different model versions through the `--model-name` pytest parameter:
+New comprehensive test suite for validating model switching between `basic` and `added_features` models.
 
-```bash
-# Default behavior (uses 'basic' model)
-pytest src/tests/
+#### TestModelSwitching (8 tests)
+- `test_basic_model_loads`: Basic model loads correctly with health check
+- `test_added_features_model_loads`: Added features model loads correctly with health check  
+- `test_basic_model_prediction`: Basic model produces valid predictions
+- `test_added_features_model_prediction`: Added features model produces valid predictions
+- `test_models_produce_different_predictions`: Different models produce different predictions for same input
+- `test_response_includes_model_name`: Response correctly identifies which model was used
+- `test_both_models_handle_multiple_predictions`: Both models handle batch predictions consistently
+- `test_consistency_within_model`: Same model produces identical predictions for duplicate requests
 
-# Test specific model version
-pytest src/tests/ --model-name=my_production_model
-pytest src/tests/ --model-name=v2.0
-```
+#### TestModelValidation (4 tests)
+- `test_invalid_zipcode_basic_model`: Basic model rejects invalid zipcodes (400 error)
+- `test_invalid_zipcode_added_features_model`: Added features model rejects invalid zipcodes (400 error)
+- `test_missing_field_basic_model`: Basic model validates required fields (422 error)
+- `test_missing_field_added_features_model`: Added features model validates required fields (422 error)
 
-All tests receive the model name through the `model_name` fixture and verify:
-- Model loads from `model/{model_name}/model.pkl`
-- Features load from `model/{model_name}/model_features.json`
-- API correctly reports `model_version` in responses
+**Total: 12 Model switching tests**
 
 ---
 
@@ -106,7 +116,7 @@ All tests receive the model name through the `model_name` fixture and verify:
 - `test_health_check`: Verifies health endpoint returns correct status with model and demographics loaded
 
 #### TestPredictEndpoint (6 tests)
-- `test_predict_single_example`: Single home prediction with full 18-field request
+- `test_predict_single_example`: Single home prediction with full request (includes high-correlation features: grade, sqft_living15)
 - `test_predict_multiple_examples`: Batch predictions with 5 homes
 - `test_predict_all_future_examples`: All 100 future examples processed successfully
 - `test_predict_invalid_zipcode`: Returns 400 error for invalid zipcodes
@@ -114,7 +124,7 @@ All tests receive the model name through the `model_name` fixture and verify:
 - `test_predict_wrong_type`: Rejects incorrect data types
 
 #### TestPredictMinimalEndpoint (3 tests)
-- `test_predict_minimal_single_example`: Single prediction with 8 core fields
+- `test_predict_minimal_single_example`: Single prediction with 8 core fields (uses basic model)
 - `test_predict_minimal_multiple_examples`: Batch predictions with minimal input
 - `test_predict_minimal_invalid_zipcode`: Returns 400 error for invalid zipcodes
 
@@ -124,9 +134,22 @@ All tests receive the model name through the `model_name` fixture and verify:
 
 #### TestPredictionConsistency (2 tests)
 - `test_same_input_same_output`: Same input produces same prediction across calls
-- `test_predict_vs_minimal_consistency`: /predict and /predict-minimal return same results
+- `test_predict_vs_minimal_consistency`: /predict and /predict-minimal return same results for overlapping fields
 
 **Total: 14 API endpoint tests**
+
+**Response Format:**
+All prediction endpoints return a simplified, clean JSON response:
+```json
+{
+  "prediction": 425000.50,
+  "model_name": "added_features"
+}
+```
+- `prediction`: Float - predicted home price in USD
+- `model_name`: String - identifies which model produced the prediction (basic or added_features)
+
+---
 
 ---
 
@@ -170,22 +193,25 @@ The test suite validates predictions across:
 
 ## Key Test Features
 
-✅ Uses actual future examples CSV data for realistic testing
-✅ Tests all 4 API endpoints (/health, /predict, /predict-minimal, /reload-model)
-✅ Validates input validation and error handling
-✅ Confirms prediction consistency and repeatability
-✅ Tests demographics data integration
-✅ Validates model loading and feature ordering
-✅ Tests both happy paths and error conditions
+✅ **Model Switching**: Tests validate behavior switching between `basic` and `added_features` models
+✅ **High-Correlation Features**: Added_features model includes grade (0.667) and sqft_living15 (0.585)
+✅ **Different Predictions**: Confirms models produce measurably different predictions due to different features
+✅ **All 4 API Endpoints**: Tests /health, /predict, /predict-minimal
+✅ **Uses Real Future Data**: Tests with 100 actual unseen examples from CSV
+✅ **Input Validation**: Tests all expected validations and error handling
+✅ **Prediction Consistency**: Confirms same model produces identical results for duplicate requests
+✅ **Demographics Integration**: Validates zipcode-based demographic data lookup
+✅ **Response Format**: Simplified JSON with prediction and model_name only
+✅ **Both Happy & Error Paths**: Tests success cases and error conditions
 
 ---
 
 ## Known Warnings
 
-The test output includes 3 Pydantic deprecation warnings (not failures):
-- `PydanticDeprecatedSince20`: Support for class-based `config` is deprecated
-- **Resolution**: Consider upgrading Pydantic models to use `ConfigDict` instead of class `Config`
-- **Impact**: None - tests pass despite warnings
+The test output includes sklearn version mismatch warnings (not failures):
+- `InconsistentVersionWarning`: Models trained with sklearn 1.3.1, running on 1.7.2
+- **Impact**: None - tests pass, models function correctly
+- **Recommendation**: Consider retraining models with current sklearn version for production
 
 ---
 
@@ -194,7 +220,7 @@ The test output includes 3 Pydantic deprecation warnings (not failures):
 To run tests in CI/CD pipeline:
 ```bash
 conda activate housing
-python -m pytest src/tests/ --junit-xml=test-results.xml --cov=src --cov-report=html
+python -m pytest src/tests/ -v --tb=short
 ```
 
 ---
@@ -205,12 +231,33 @@ All dependencies are installed in the `housing` conda environment:
 - fastapi>=0.128.0
 - pydantic>=2.12.0
 - pytest>=8.4.2
-- httpx>=0.24.0
+- httpx>=0.28.0
 - scikit-learn>=1.3.0
 - pandas>=2.1.0
-- uvicorn>=0.24.0
+- uvicorn>=0.35.0
 
 Activate the environment:
 ```bash
 conda activate housing
 ```
+
+---
+
+## Model Information
+
+### Basic Model
+- **Features**: 9 core features (bedrooms, bathrooms, sqft_living, sqft_lot, floors, sqft_above, sqft_basement, zipcode demographics)
+- **Algorithm**: K-Nearest Neighbors with RobustScaler
+- **Purpose**: Minimal viable model with essential features
+- **Location**: `model/basic/`
+
+### Added Features Model  
+- **Features**: 11 features (basic + `grade` + `sqft_living15`)
+- **High-Correlation Additions**:
+  - `grade`: Building quality (0.667 correlation with price)
+  - `sqft_living15`: Living area of 15 nearest neighbors (0.585 correlation)
+- **Algorithm**: K-Nearest Neighbors with RobustScaler
+- **Purpose**: Improved model with features identified through correlation analysis
+- **Location**: `model/added_features/`
+
+

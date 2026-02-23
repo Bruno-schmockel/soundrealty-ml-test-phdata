@@ -28,9 +28,9 @@ class TestPredictEndpoint:
         
         # Validate response structure
         assert "prediction" in data
-        assert "model_version" in data
+        assert "model_name" in data
         assert isinstance(data["prediction"], (int, float))
-        assert isinstance(data["model_version"], str)
+        assert isinstance(data["model_name"], str)
         assert data["prediction"] > 0, "Prediction should be positive"
     
     def test_predict_multiple_examples(self, client: TestClient, sample_prediction_data: list):
@@ -110,7 +110,7 @@ class TestPredictMinimalEndpoint:
         
         # Validate response structure
         assert "prediction" in data
-        assert "model_version" in data
+        assert "model_name" in data
         assert isinstance(data["prediction"], (int, float))
         assert data["prediction"] > 0
     

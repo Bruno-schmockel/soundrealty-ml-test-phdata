@@ -1,6 +1,6 @@
 """Pydantic models for API request/response validation."""
 
-from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -81,15 +81,13 @@ class PredictionMinimalRequest(BaseModel):
 class PredictionResponse(BaseModel):
     """Response model for prediction."""
     prediction: float = Field(..., description="Predicted home price in USD")
-    model_version: str = Field(..., description="Version of the model used")
-    confidence: Optional[float] = Field(None, description="Confidence score (0-1)")
+    model_name: str = Field(..., description="Name of the model used for prediction")
     
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "prediction": 425000.50,
-                "model_version": "1.0.0",
-                "confidence": 0.85
+                "model_name": "added_features"
             }
         }
     )

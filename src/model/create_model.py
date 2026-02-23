@@ -20,7 +20,7 @@ DEMOGRAPHICS_PATH = "data/zipcode_demographics.csv"  # path to CSV with demograp
 # List of columns (subset) that will be taken from home sale data
 SALES_COLUMN_SELECTION = [
     'price', 'bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors',
-    'sqft_above', 'sqft_basement', 'zipcode'
+    'sqft_above', 'sqft_basement', 'grade', 'sqft_living15', 'zipcode'
 ]
 OUTPUT_DIR = "model"  # Directory where output artifacts will be saved
 

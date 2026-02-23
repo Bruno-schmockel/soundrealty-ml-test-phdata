@@ -1,0 +1,12 @@
+{
+  "train_rmse": 132499.96507339345,
+  "test_rmse": 184555.81900760205,
+  "train_mae": 69373.47424270467,
+  "test_mae": 91305.10022205774,
+  "train_r2": 0.8647550139123529,
+  "test_r2": 0.772301682811913,
+  "test_mape": 0.1601464845358766,
+  "test_weighted_rmse": 337160.6213832735,
+  "underpriced_count": 2801,
+  "underpriced_percentage": 51.8319763138416
+}
