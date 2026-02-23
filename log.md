@@ -187,3 +187,15 @@ Evaluating what needs to be done still:
 * integrate database to log preditions
 * Improve model 
 * Improve model substitution
+
+# 2026/02/23 10:09
+
+Just annotating for latter. Things that I just remembered to try.
+
+* add model versioning (on the artifacts)
+* add docker compose for a better refined model substitution engine with proxy
+* information value of variables
+* explicability
+* throw all variables in the model
+* change the normalization method for something more custom made
+* 
