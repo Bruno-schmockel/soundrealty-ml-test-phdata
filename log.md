@@ -205,6 +205,6 @@ Added a simple model versioning, where the artifacts are kept in the model folde
 
 Model versions are user named to facilitate demonstration.
 
-Added a few more variables to the tests so I can use in different models 
+Added a few more variables to the tests so I can use in different models. The variables added are the ones that shown better correlation to target. There was a gain of 30% in MAE.
 
 The received model is the basic model. The prediction basic always use the minimal model call.
