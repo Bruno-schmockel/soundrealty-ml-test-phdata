@@ -180,7 +180,7 @@ Generated a docker implementation. will now comb it and test it
 # 2026/02/22 16:08
 
 Evaluating what needs to be done still:
-* API autentication
+* API authentication
 * request logging
 * feature importance reporting and drift detection
 * model confidence
@@ -190,7 +190,7 @@ Evaluating what needs to be done still:
 
 # 2026/02/23 10:09
 
-Just annotating for latter. Things that I just remembered to try.
+Just annotating for later. Things that I just remembered to try.
 
 * add model versioning (on the artifacts)
 * add docker compose for a better refined model substitution engine with proxy
@@ -201,10 +201,10 @@ Just annotating for latter. Things that I just remembered to try.
 
 # 2026/02/23 19:47
 
-Added a simple model versioning, where the artifacts are kept in the model folder. In a real scenario would mantain them in a model versioning artifact registry. maybe I will add it latter, didn't decided yet
+Added a simple model versioning, where the artifacts are kept in the model folder. In a real scenario would maintain them in a model versioning artifact registry. maybe I will add it later, didn't decided yet
 
 Model versions are user named to facilitate demonstration.
 
-Added a fiew more variables to the tests so I can use in diferent models 
+Added a few more variables to the tests so I can use in different models 
 
 The received model is the basic model. The prediction basic always use the minimal model call.
