@@ -23,7 +23,7 @@ A comprehensive logging system that tracks every model prediction call made thro
 - `display_logs.py` - Formats and displays log entries nicely
 
 ### 3. **Documentation**
-- `documents/MODEL_CALL_LOGGING.md` - Feature documentation
+- `../MODEL_CALL_LOGGING.md` - Feature documentation
 - `LOGGING_IMPLEMENTATION.md` - Implementation details
 - `TEST_REPORT_LOGGING.md` - Detailed test results
 - `TESTING_SUMMARY.md` - Quick reference guide
@@ -169,7 +169,7 @@ docker exec soundrealty-api-basic grep "77d6882b-fa86-407e-8fef-0b600911877c" /a
 - test_logging.py
 - test_error_logging.py
 - display_logs.py
-- documents/MODEL_CALL_LOGGING.md
+- ../MODEL_CALL_LOGGING.md
 - LOGGING_IMPLEMENTATION.md
 - TEST_REPORT_LOGGING.md
 - TESTING_SUMMARY.md
