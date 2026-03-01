@@ -1,2 +1,3 @@
 .continue/
+logs/
 *.pyc
