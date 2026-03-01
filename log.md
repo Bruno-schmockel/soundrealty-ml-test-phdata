@@ -208,3 +208,11 @@ Model versions are user named to facilitate demonstration.
 Added a few more variables to the tests so I can use in different models. The variables added are the ones that shown better correlation to target. There was a gain of 30% in MAE.
 
 The received model is the basic model. The prediction basic always use the minimal model call.
+
+# 2026/03/01 15:11
+
+Got a real wild week on the job, had little time to work on it the rest of the week. 
+
+Added a reverse proxy dividing the load 60/40 between basic and added_features models. Added most of the code by llm, and then changed the configurations to understand whats happening. First time using nginx. It was recommended by the llm and a brief search about it gave the same answer. 
+
+Will now add a database logging of the model calls so I can see the split in the models. 
