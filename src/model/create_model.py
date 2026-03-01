@@ -1,3 +1,4 @@
+import argparse
 import json
 import pathlib
 import pickle
@@ -214,12 +215,22 @@ def evaluate_model(model, x_train, y_train, x_test, y_test, output_dir: pathlib.
 
 def main():
     """Load data, train model, evaluate, and export artifacts."""
-    # Get model name from user
-    model_name = input("Enter the name for this model: ").strip()
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Train and save a KNN model for house price prediction")
+    parser.add_argument("--model-name", type=str, default=None, 
+                        help="Name for the model. If not provided, will prompt user or generate random name")
+    args = parser.parse_args()
+    
+    # Get model name from argument or user input
+    model_name = args.model_name
+    if not model_name:
+        model_name = input("Enter the name for this model: ").strip()
     if not model_name:
         # Generate a random 4-letter name
         model_name = ''.join(random.choices(string.ascii_lowercase, k=4))
         print(f"No name provided. Generated random model name: {model_name}")
+    else:
+        print(f"Using model name: {model_name}")
     
     x, y = load_data(SALES_PATH, DEMOGRAPHICS_PATH, SALES_COLUMN_SELECTION)
     x_train, x_test, y_train, y_test = model_selection.train_test_split(

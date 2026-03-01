@@ -1,0 +1,57 @@
+name: Train Model with CI/CD
+
+on:
+  # Run on schedule (daily at 2 AM UTC)
+  schedule:
+    - cron: '0 2 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  train-model:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas scikit-learn matplotlib numpy
+      
+      - name: Generate model name with date and hour
+        id: model_name
+        run: |
+          MODEL_NAME=$(date +'%Y-%m-%d_%H')
+          echo "name=$MODEL_NAME" >> $GITHUB_OUTPUT
+          echo "Model name: $MODEL_NAME"
+      
+      - name: Train model
+        run: |
+          python src/model/create_model.py --model-name "${{ steps.model_name.outputs.name }}"
+      
+      - name: Upload model artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: model-${{ steps.model_name.outputs.name }}
+          path: model/${{ steps.model_name.outputs.name }}/
+          retention-days: 30
+      
+      - name: Commit and push model artifacts
+        if: always()
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add model/${{ steps.model_name.outputs.name }}/
+          git commit -m "Add trained model: ${{ steps.model_name.outputs.name }}" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
