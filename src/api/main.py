@@ -7,9 +7,12 @@ from .models import (
     PredictionRequest,
     PredictionMinimalRequest,
     PredictionResponse,
-    HealthResponse
+    HealthResponse,
+    PredictionExplanationResponse,
+    ModelSummaryResponse
 )
 from .prediction_service import PredictionService
+from .model_explainer import ModelExplainer
 
 
 # Configure logging
@@ -30,6 +33,9 @@ basic_model_service = PredictionService(
     model_name='basic',
     demographics_path="data/zipcode_demographics.csv"
 )
+
+# Initialize model explainer for generating prediction explanations
+model_explainer = ModelExplainer(model_dir="model")
 
 
 def extract_caller_metadata(request: Request) -> dict:
@@ -132,15 +138,57 @@ async def predict(request: PredictionRequest, http_request: Request):
             if key != 'zipcode':
                 input_data[key] = value
         
+        # Filter input data to only include features the model was trained with
+        expected_features = set(prediction_service.load_features())
+        filtered_input_data = {k: v for k, v in input_data.items() if k in expected_features}
+        
         # Validate input data against model features
-        prediction_service.validate_input(input_data)
+        prediction_service.validate_input(filtered_input_data)
         
         # Make prediction with caller metadata and endpoint identification
         result = prediction_service.predict_from_dict(
-            input_data, 
+            filtered_input_data, 
             caller_metadata=caller_metadata,
             api_instance_id="predict"
         )
+        
+        # Generate explanation only if model is not 'basic' and has explanation artifacts
+        explanation_summary = None
+        if prediction_service.model_name != 'basic' and prediction_service.model_name in model_explainer.explanation_cache:
+            explanation = model_explainer.get_prediction_explanation(
+                model_name=prediction_service.model_name,
+                input_dict=filtered_input_data,
+                prediction=result['prediction']
+            )
+            
+            # Create simplified explanation summary for response
+            explanation_summary = {
+                "prediction_confidence": explanation.get('prediction_confidence'),
+                "key_drivers": explanation.get('key_drivers'),
+                "top_features": [
+                    {
+                        "feature": f['feature'],
+                        "importance": f['importance'],
+                        "z_score": f['z_score']
+                    }
+                    for f in explanation.get('feature_analysis', [])[:5]
+                ]
+            }
+            
+            # Add explanation to result
+            result['explanation'] = explanation_summary
+        
+        # Log prediction with explanation (if available)
+        prediction_service.call_logger.log_prediction_call(
+            input_variables=filtered_input_data,
+            model_name=prediction_service.model_name,
+            prediction_result=result['prediction'],
+            caller_metadata=caller_metadata,
+            execution_time_ms=result.get('execution_time_ms'),
+            api_instance_id="predict",
+            explanation=explanation_summary
+        )
+        
         return result
 
     except ValueError as e:
@@ -187,15 +235,57 @@ async def predict_minimal(request: PredictionMinimalRequest, http_request: Reque
             if key != 'zipcode':
                 input_data[key] = value
         
+        # Filter input data to only include features the model was trained with
+        expected_features = set(basic_model_service.load_features())
+        filtered_input_data = {k: v for k, v in input_data.items() if k in expected_features}
+        
         # Validate input data against model features
-        basic_model_service.validate_input(input_data)
+        basic_model_service.validate_input(filtered_input_data)
         
         # Make prediction with caller metadata and endpoint identification
         result = basic_model_service.predict_from_dict(
-            input_data, 
+            filtered_input_data, 
             caller_metadata=caller_metadata,
             api_instance_id="predict-minimal"
         )
+        
+        # Generate explanation only if model is not 'basic' and has explanation artifacts
+        explanation_summary = None
+        if basic_model_service.model_name != 'basic' and basic_model_service.model_name in model_explainer.explanation_cache:
+            explanation = model_explainer.get_prediction_explanation(
+                model_name=basic_model_service.model_name,
+                input_dict=filtered_input_data,
+                prediction=result['prediction']
+            )
+            
+            # Create simplified explanation summary for response
+            explanation_summary = {
+                "prediction_confidence": explanation.get('prediction_confidence'),
+                "key_drivers": explanation.get('key_drivers'),
+                "top_features": [
+                    {
+                        "feature": f['feature'],
+                        "importance": f['importance'],
+                        "z_score": f['z_score']
+                    }
+                    for f in explanation.get('feature_analysis', [])[:5]
+                ]
+            }
+            
+            # Add explanation to result
+            result['explanation'] = explanation_summary
+        
+        # Log prediction with explanation (if available)
+        basic_model_service.call_logger.log_prediction_call(
+            input_variables=filtered_input_data,
+            model_name=basic_model_service.model_name,
+            prediction_result=result['prediction'],
+            caller_metadata=caller_metadata,
+            execution_time_ms=result.get('execution_time_ms'),
+            api_instance_id="predict-minimal",
+            explanation=explanation_summary
+        )
+        
         return result
 
     except ValueError as e:
@@ -235,3 +325,95 @@ async def reload_model(model_name: str = "basic"):
     except Exception as e:
         logger.error(f"Failed to reload model '{model_name}': {e}")
         raise HTTPException(status_code=500, detail=f"Failed to reload model: {str(e)}")
+
+
+@app.post("/explain", response_model=PredictionExplanationResponse)
+async def explain_prediction(request: PredictionRequest):
+    """
+    Get an explanation for a prediction without saving it.
+    
+    Returns an explanation of which features drove the prediction and how unusual
+    the input values are compared to the training data.
+    """
+    # Validate zipcode and get demographics
+    zipcode_demo = prediction_service.data_loader.get_demographics_for_zipcode(request.zipcode)
+    if zipcode_demo is None:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Zipcode {request.zipcode} not found in demographics database"
+        )
+
+    try:
+        # Build input data
+        input_data = request.model_dump()
+        del input_data['zipcode']
+        for key, value in zipcode_demo.items():
+            if key != 'zipcode':
+                input_data[key] = value
+        
+        # Validate and predict
+        prediction_service.validate_input(input_data)
+        prediction_result = prediction_service.predict_from_dict(
+            input_data,
+            api_instance_id="explain"
+        )
+        
+        # Get explanation
+        explanation = model_explainer.get_prediction_explanation(
+            model_name=prediction_service.model_name,
+            input_dict=input_data,
+            prediction=prediction_result['prediction']
+        )
+        
+        return explanation
+
+    except ValueError as e:
+        logger.error(f"Explanation error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        logger.error(f"Unexpected error in explanation: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@app.get("/model-info", response_model=ModelSummaryResponse)
+async def get_model_info():
+    """
+    Get information about the currently active model.
+    
+    Returns model type, total features, and the top 5 most important features.
+    """
+    summary = model_explainer.get_model_summary(prediction_service.model_name)
+    
+    if "error" in summary:
+        raise HTTPException(status_code=404, detail=summary["error"])
+    
+    return summary
+
+
+@app.get("/feature-importance")
+async def get_feature_importance(top_n: int = 10):
+    """
+    Get feature importance rankings for the current model.
+    
+    Args:
+        top_n: Number of top features to return (default 10)
+        
+    Returns:
+        List of features ranked by importance
+    """
+    features = model_explainer.get_feature_importance(
+        prediction_service.model_name,
+        top_n=top_n
+    )
+    
+    if not features:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No feature importance data found for model '{prediction_service.model_name}'"
+        )
+    
+    return {
+        "model_name": prediction_service.model_name,
+        "feature_count": len(features),
+        "top_features": features
+    }

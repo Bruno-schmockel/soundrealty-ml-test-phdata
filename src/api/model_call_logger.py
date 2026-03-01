@@ -41,7 +41,8 @@ class ModelCallLogger:
         caller_metadata: Optional[Dict[str, Any]] = None,
         execution_time_ms: Optional[float] = None,
         error: Optional[str] = None,
-        api_instance_id: Optional[str] = None
+        api_instance_id: Optional[str] = None,
+        explanation: Optional[Dict[str, Any]] = None
     ) -> str:
         """Log a model prediction call with all relevant details.
         
@@ -53,6 +54,7 @@ class ModelCallLogger:
             execution_time_ms: Optional execution time in milliseconds
             error: Optional error message if prediction failed
             api_instance_id: Optional API instance identifier (container name, hostname, etc.)
+            explanation: Optional explanation of the prediction with feature importance
             
         Returns:
             Unique call ID for this prediction
@@ -69,7 +71,8 @@ class ModelCallLogger:
             "prediction_result": prediction_result if prediction_result is not None else None,
             "caller_metadata": caller_metadata or {},
             "execution_time_ms": execution_time_ms,
-            "error": error
+            "error": error,
+            "explanation": explanation
         }
         
         # Log to file as structured JSON

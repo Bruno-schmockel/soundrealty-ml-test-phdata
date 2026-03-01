@@ -1,0 +1,429 @@
+{
+  "model_type": "KNeighborsRegressor with RobustScaler",
+  "total_features": 35,
+  "feature_importance_ranking": [
+    {
+      "feature": "grade",
+      "importance": 0.1303304354131061,
+      "std": 0.0075492481270447295
+    },
+    {
+      "feature": "farm_ppltn_qty",
+      "importance": 0.10885995993873812,
+      "std": 0.013110936207988828
+    },
+    {
+      "feature": "per_non_farm",
+      "importance": 0.09366388966860428,
+      "std": 0.010382579521962558
+    },
+    {
+      "feature": "per_urbn",
+      "importance": 0.0935329019018365,
+      "std": 0.011245486113654564
+    },
+    {
+      "feature": "non_farm_qty",
+      "importance": 0.0696368190060284,
+      "std": 0.009809213042538139
+    },
+    {
+      "feature": "sqft_living",
+      "importance": 0.05614647737177932,
+      "std": 0.0041658259416298095
+    },
+    {
+      "feature": "sqft_lot",
+      "importance": 0.05200622874201364,
+      "std": 0.01072563160855006
+    },
+    {
+      "feature": "sqft_above",
+      "importance": 0.050313931437366635,
+      "std": 0.005425290125788011
+    },
+    {
+      "feature": "sqft_living15",
+      "importance": 0.044454809692274874,
+      "std": 0.002981238001798036
+    },
+    {
+      "feature": "per_less_than_9",
+      "importance": 0.028903989773871996,
+      "std": 0.00298771744923463
+    },
+    {
+      "feature": "hous_val_amt",
+      "importance": 0.02587788966872818,
+      "std": 0.003993120053328313
+    },
+    {
+      "feature": "sbrbn_ppltn_qty",
+      "importance": 0.02230928902129089,
+      "std": 0.007261751530875883
+    },
+    {
+      "feature": "sqft_basement",
+      "importance": 0.017534875330557354,
+      "std": 0.0034836234067433694
+    },
+    {
+      "feature": "bathrooms",
+      "importance": 0.01657743184566559,
+      "std": 0.003460035659184936
+    },
+    {
+      "feature": "per_some_clg",
+      "importance": 0.011682347826633377,
+      "std": 0.0012935810264985941
+    },
+    {
+      "feature": "medn_incm_per_prsn_amt",
+      "importance": 0.010188009206728943,
+      "std": 0.0036480054099268105
+    },
+    {
+      "feature": "bedrooms",
+      "importance": 0.008749261097615757,
+      "std": 0.0028602150471187067
+    },
+    {
+      "feature": "per_assoc",
+      "importance": 0.0051385471648145555,
+      "std": 0.003129762422701267
+    },
+    {
+      "feature": "per_hsd",
+      "importance": 0.003922214976518313,
+      "std": 0.0019436212499414976
+    },
+    {
+      "feature": "medn_hshld_incm_amt",
+      "importance": 0.0037988322716064117,
+      "std": 0.002043485243775601
+    },
+    {
+      "feature": "edctn_prfsnl_qty",
+      "importance": 0.002738642505383171,
+      "std": 0.0010408154146247437
+    },
+    {
+      "feature": "edctn_assoc_dgre_qty",
+      "importance": 0.002494891659284315,
+      "std": 0.0018250720775942837
+    },
+    {
+      "feature": "per_9_to_12",
+      "importance": 0.0014377605832623596,
+      "std": 0.001502231931089707
+    },
+    {
+      "feature": "edctn_less_than_9_qty",
+      "importance": 0.001395763914288517,
+      "std": 0.0010451118226344435
+    },
+    {
+      "feature": "floors",
+      "importance": 0.0011344725479815131,
+      "std": 0.0012766672644141653
+    },
+    {
+      "feature": "edctn_bchlr_dgre_qty",
+      "importance": 0.0006382087573990946,
+      "std": 0.0012651737643545556
+    },
+    {
+      "feature": "urbn_ppltn_qty",
+      "importance": 0.0005474769987878104,
+      "std": 0.0011680513564895428
+    },
+    {
+      "feature": "per_sbrbn",
+      "importance": 2.4672707988004916e-05,
+      "std": 0.0
+    },
+    {
+      "feature": "per_farm",
+      "importance": 2.4672707988004916e-05,
+      "std": 0.0
+    },
+    {
+      "feature": "ppltn_qty",
+      "importance": -1.5887351394017202e-06,
+      "std": 0.0015408403901258545
+    },
+    {
+      "feature": "edctn_9_12_qty",
+      "importance": -7.10272344836449e-05,
+      "std": 0.0010483466433707242
+    },
+    {
+      "feature": "edctn_high_schl_qty",
+      "importance": -0.00024785098016910645,
+      "std": 0.001594632538005771
+    },
+    {
+      "feature": "edctn_some_clg_qty",
+      "importance": -0.0008720923658313117,
+      "std": 0.0011556892419964534
+    },
+    {
+      "feature": "per_bchlr",
+      "importance": -0.0010091275952806345,
+      "std": 0.0006574202697338527
+    },
+    {
+      "feature": "per_prfsnl",
+      "importance": -0.0012605628159940707,
+      "std": 0.0005696216123733884
+    }
+  ],
+  "feature_statistics": {
+    "bedrooms": {
+      "mean": 3.379903774981495,
+      "std": 0.9203980773336019,
+      "min": 0.0,
+      "max": 11.0,
+      "importance_score": 0.008749261097615757
+    },
+    "bathrooms": {
+      "mean": 2.1198649148778683,
+      "std": 0.7847885209735387,
+      "min": 0.0,
+      "max": 8.0,
+      "importance_score": 0.01657743184566559
+    },
+    "sqft_living": {
+      "mean": 2099.771465581051,
+      "std": 951.7151355299238,
+      "min": 384.0,
+      "max": 13540.0,
+      "importance_score": 0.05614647737177932
+    },
+    "sqft_lot": {
+      "mean": 15824.717986676536,
+      "std": 48372.73638372492,
+      "min": 572.0,
+      "max": 1651359.0,
+      "importance_score": 0.05200622874201364
+    },
+    "floors": {
+      "mean": 1.4807549962990378,
+      "std": 0.5305751578032448,
+      "min": 1.0,
+      "max": 3.5,
+      "importance_score": 0.0011344725479815131
+    },
+    "grade": {
+      "mean": 7.668578830495929,
+      "std": 1.188617797385579,
+      "min": 4.0,
+      "max": 13.0,
+      "importance_score": 0.1303304354131061
+    },
+    "sqft_above": {
+      "mean": 1799.2975573649148,
+      "std": 846.6029324165719,
+      "min": 384.0,
+      "max": 9410.0,
+      "importance_score": 0.050313931437366635
+    },
+    "sqft_basement": {
+      "mean": 300.4739082161362,
+      "std": 454.2158980605021,
+      "min": 0.0,
+      "max": 4130.0,
+      "importance_score": 0.017534875330557354
+    },
+    "sqft_living15": {
+      "mean": 1996.7512953367875,
+      "std": 695.7070917643242,
+      "min": 620.0,
+      "max": 5790.0,
+      "importance_score": 0.044454809692274874
+    },
+    "ppltn_qty": {
+      "mean": 28992.30903034789,
+      "std": 11058.065084945842,
+      "min": 3037.0,
+      "max": 64181.0,
+      "importance_score": -1.5887351394017202e-06
+    },
+    "urbn_ppltn_qty": {
+      "mean": 27979.999814951887,
+      "std": 12053.442585822544,
+      "min": 0.0,
+      "max": 64181.0,
+      "importance_score": 0.0005474769987878104
+    },
+    "sbrbn_ppltn_qty": {
+      "mean": 161.73056994818654,
+      "std": 1225.7370083816613,
+      "min": 0.0,
+      "max": 11176.0,
+      "importance_score": 0.02230928902129089
+    },
+    "farm_ppltn_qty": {
+      "mean": 13.199111769059956,
+      "std": 52.62067427396684,
+      "min": 0.0,
+      "max": 439.0,
+      "importance_score": 0.10885995993873812
+    },
+    "non_farm_qty": {
+      "mean": 802.0235011102886,
+      "std": 1793.6511419530023,
+      "min": 0.0,
+      "max": 9973.0,
+      "importance_score": 0.0696368190060284
+    },
+    "medn_hshld_incm_amt": {
+      "mean": 57897.180977054035,
+      "std": 13685.375111729054,
+      "min": 32085.0,
+      "max": 132665.0,
+      "importance_score": 0.0037988322716064117
+    },
+    "medn_incm_per_prsn_amt": {
+      "mean": 30086.48149518875,
+      "std": 8296.75702526284,
+      "min": 17087.0,
+      "max": 81926.0,
+      "importance_score": 0.010188009206728943
+    },
+    "hous_val_amt": {
+      "mean": 253421.15099925981,
+      "std": 83509.80263045045,
+      "min": 141500.0,
+      "max": 790300.0,
+      "importance_score": 0.02587788966872818
+    },
+    "edctn_less_than_9_qty": {
+      "mean": 689.2227979274611,
+      "std": 687.3257300707877,
+      "min": 4.0,
+      "max": 3671.0,
+      "importance_score": 0.001395763914288517
+    },
+    "edctn_9_12_qty": {
+      "mean": 1605.7659141376757,
+      "std": 949.0390710653318,
+      "min": 51.0,
+      "max": 4483.0,
+      "importance_score": -7.10272344836449e-05
+    },
+    "edctn_high_schl_qty": {
+      "mean": 4298.713730569948,
+      "std": 2088.171866282039,
+      "min": 160.0,
+      "max": 12241.0,
+      "importance_score": -0.00024785098016910645
+    },
+    "edctn_some_clg_qty": {
+      "mean": 5569.044781643227,
+      "std": 2334.4115506950125,
+      "min": 359.0,
+      "max": 13680.0,
+      "importance_score": -0.0008720923658313117
+    },
+    "edctn_assoc_dgre_qty": {
+      "mean": 1672.0753145817912,
+      "std": 706.2089195175188,
+      "min": 71.0,
+      "max": 3998.0,
+      "importance_score": 0.002494891659284315
+    },
+    "edctn_bchlr_dgre_qty": {
+      "mean": 5770.054034048852,
+      "std": 3117.3980801258954,
+      "min": 427.0,
+      "max": 14271.0,
+      "importance_score": 0.0006382087573990946
+    },
+    "edctn_prfsnl_qty": {
+      "mean": 2728.680977054034,
+      "std": 1886.6708270260267,
+      "min": 186.0,
+      "max": 8891.0,
+      "importance_score": 0.002738642505383171
+    },
+    "per_urbn": {
+      "mean": 92.9239452257587,
+      "std": 20.335396782370943,
+      "min": 0.0,
+      "max": 100.0,
+      "importance_score": 0.0935329019018365
+    },
+    "per_sbrbn": {
+      "mean": 1.7796076980014803,
+      "std": 11.148904767134285,
+      "min": 0.0,
+      "max": 81.0,
+      "importance_score": 2.4672707988004916e-05
+    },
+    "per_farm": {
+      "mean": 0.05292376017764619,
+      "std": 0.28500166560299633,
+      "min": 0.0,
+      "max": 2.0,
+      "importance_score": 2.4672707988004916e-05
+    },
+    "per_non_farm": {
+      "mean": 4.877683197631384,
+      "std": 13.906712731737818,
+      "min": 0.0,
+      "max": 98.0,
+      "importance_score": 0.09366388966860428
+    },
+    "per_less_than_9": {
+      "mean": 1.8623242042931163,
+      "std": 2.1621981230453358,
+      "min": 0.0,
+      "max": 11.0,
+      "importance_score": 0.028903989773871996
+    },
+    "per_9_to_12": {
+      "mean": 5.100666173205033,
+      "std": 2.4786050121343246,
+      "min": 1.0,
+      "max": 11.0,
+      "importance_score": 0.0014377605832623596
+    },
+    "per_hsd": {
+      "mean": 14.413397483345669,
+      "std": 4.421534427015671,
+      "min": 5.0,
+      "max": 25.0,
+      "importance_score": 0.003922214976518313
+    },
+    "per_some_clg": {
+      "mean": 18.681347150259068,
+      "std": 2.7644687698780332,
+      "min": 11.0,
+      "max": 34.0,
+      "importance_score": 0.011682347826633377
+    },
+    "per_assoc": {
+      "mean": 5.139341228719467,
+      "std": 0.7949121077663381,
+      "min": 2.0,
+      "max": 7.0,
+      "importance_score": 0.0051385471648145555
+    },
+    "per_bchlr": {
+      "mean": 19.33382679496669,
+      "std": 7.036903023155698,
+      "min": 6.0,
+      "max": 39.0,
+      "importance_score": -0.0010091275952806345
+    },
+    "per_prfsnl": {
+      "mean": 8.802368615840118,
+      "std": 5.08453305064392,
+      "min": 2.0,
+      "max": 24.0,
+      "importance_score": -0.0012605628159940707
+    }
+  },
+  "explanation_date": "2026-03-01T16:51:39.124935"
+}
