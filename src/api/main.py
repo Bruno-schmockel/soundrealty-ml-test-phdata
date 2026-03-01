@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 import logging
 import os
 
@@ -30,6 +30,28 @@ basic_model_service = PredictionService(
     model_name='basic',
     demographics_path="data/zipcode_demographics.csv"
 )
+
+
+def extract_caller_metadata(request: Request) -> dict:
+    """Extract metadata about the caller from the request.
+    
+    Args:
+        request: FastAPI Request object
+        
+    Returns:
+        Dictionary containing caller metadata
+    """
+    client_host = request.client.host if request.client else "unknown"
+    client_port = request.client.port if request.client else None
+    user_agent = request.headers.get("user-agent", "unknown")
+    
+    return {
+        "client_ip": client_host,
+        "client_port": client_port,
+        "user_agent": user_agent,
+        "endpoint": request.url.path,
+        "method": request.method
+    }
 
 
 @asynccontextmanager
@@ -82,13 +104,16 @@ async def health_check():
 
 
 @app.post("/predict", response_model=PredictionResponse)
-async def predict(request: PredictionRequest):
+async def predict(request: PredictionRequest, http_request: Request):
     """
     Predict home price using full set of features.
     
     This endpoint accepts all available features including zipcode,
     automatically joins demographic data, and returns a price prediction.
     """
+    # Extract caller metadata for logging
+    caller_metadata = extract_caller_metadata(http_request)
+    
     # Validate zipcode and get demographics in one call
     zipcode_demo = prediction_service.data_loader.get_demographics_for_zipcode(request.zipcode)
     if zipcode_demo is None:
@@ -110,8 +135,8 @@ async def predict(request: PredictionRequest):
         # Validate input data against model features
         prediction_service.validate_input(input_data)
         
-        # Make prediction
-        result = prediction_service.predict_from_dict(input_data)
+        # Make prediction with caller metadata
+        result = prediction_service.predict_from_dict(input_data, caller_metadata=caller_metadata)
         return result
 
     except ValueError as e:
@@ -129,7 +154,7 @@ async def predict(request: PredictionRequest):
 
 
 @app.post("/predict-minimal", response_model=PredictionResponse)
-async def predict_minimal(request: PredictionMinimalRequest):
+async def predict_minimal(request: PredictionMinimalRequest, http_request: Request):
     """
     Predict home price using minimal feature set with the basic model.
     
@@ -137,6 +162,9 @@ async def predict_minimal(request: PredictionMinimalRequest):
     automatically joins demographic data by zipcode.
     Always uses the 'basic' model regardless of MODEL_NAME environment variable.
     """
+    # Extract caller metadata for logging
+    caller_metadata = extract_caller_metadata(http_request)
+    
     # Validate zipcode and get demographics in one call
     zipcode_demo = basic_model_service.data_loader.get_demographics_for_zipcode(request.zipcode)
     if zipcode_demo is None:
@@ -158,8 +186,8 @@ async def predict_minimal(request: PredictionMinimalRequest):
         # Validate input data against model features
         basic_model_service.validate_input(input_data)
         
-        # Make prediction
-        result = basic_model_service.predict_from_dict(input_data)
+        # Make prediction with caller metadata
+        result = basic_model_service.predict_from_dict(input_data, caller_metadata=caller_metadata)
         return result
 
     except ValueError as e:

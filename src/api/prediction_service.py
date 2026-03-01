@@ -3,11 +3,13 @@
 import json
 import pathlib
 import pickle
+import time
 from typing import Optional, List, Dict, Any
 import numpy as np
 import pandas
 
 from .data_loader import DataLoader
+from .model_call_logger import ModelCallLogger
 
 
 class PredictionService:
@@ -32,6 +34,9 @@ class PredictionService:
         self._features: Optional[List[str]] = None
         self._feature_types: Optional[Dict[str, str]] = None
         self._model_version = model_name
+        
+        # Initialize model call logger
+        self.call_logger = ModelCallLogger()
     
     def _set_model_paths(self, model_name: str) -> None:
         """Set paths based on model name.
@@ -239,14 +244,16 @@ class PredictionService:
                     "Type mismatch in input data:\n" + "\n".join(type_errors)
                 )
 
-    def predict_from_dict(self, input_dict: dict) -> Dict[str, Any]:
+    def predict_from_dict(self, input_dict: dict, caller_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Make a prediction using a dictionary of input values.
         
         Assumes input has been validated. Extracts only required fields
         and makes the prediction. This approach is independent of specific field names.
+        Logs all prediction details including input, output, and caller metadata.
         
         Args:
             input_dict: Dictionary containing all required input values (should be pre-validated)
+            caller_metadata: Optional metadata about the caller (IP address, user agent, etc.)
             
         Returns:
             Dictionary with prediction and metadata
@@ -264,10 +271,26 @@ class PredictionService:
         
         assert self._model is not None
         
+        # Record start time for execution tracking
+        start_time = time.time()
+        
         # Make prediction
         prediction = self._model.predict(input_data)[0]
         
+        # Calculate execution time
+        execution_time_ms = (time.time() - start_time) * 1000
+        
+        # Log the prediction call with all details
+        call_id = self.call_logger.log_prediction_call(
+            input_variables=input_dict,
+            model_name=self.model_name,
+            prediction_result=float(prediction),
+            caller_metadata=caller_metadata,
+            execution_time_ms=execution_time_ms
+        )
+        
         return {
             "prediction": float(prediction),
-            "model_name": self.model_name
+            "model_name": self.model_name,
+            "call_id": call_id
         }

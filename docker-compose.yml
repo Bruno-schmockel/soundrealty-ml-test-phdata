@@ -12,6 +12,7 @@ services:
       - ./model:/app/model:ro
       - ./data:/app/data:ro
       - ./src:/app/src:ro
+      - ./logs:/app/logs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -37,6 +38,7 @@ services:
       - ./model:/app/model:ro
       - ./data:/app/data:ro
       - ./src:/app/src:ro
+      - ./logs:/app/logs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
