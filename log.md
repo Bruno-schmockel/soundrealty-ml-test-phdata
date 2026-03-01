@@ -216,3 +216,7 @@ Got a real wild week on the job, had little time to work on it the rest of the w
 Added a reverse proxy dividing the load 60/40 between basic and added_features models. Added most of the code by llm, and then changed the configurations to understand whats happening. First time using nginx. It was recommended by the llm and a brief search about it gave the same answer. 
 
 Will now add a database logging of the model calls so I can see the split in the models. 
+
+# 2026/03/01 16:18 
+
+Got a simple log for the calls of the API for the model. Im drawing a line in hosting an actual DB to this project. For now. 
