@@ -39,7 +39,7 @@ jobs:
       
       - name: Upload model artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: model-${{ steps.model_name.outputs.name }}
           path: model/${{ steps.model_name.outputs.name }}/
