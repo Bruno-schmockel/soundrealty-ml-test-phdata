@@ -40,7 +40,8 @@ class ModelCallLogger:
         prediction_result: float,
         caller_metadata: Optional[Dict[str, Any]] = None,
         execution_time_ms: Optional[float] = None,
-        error: Optional[str] = None
+        error: Optional[str] = None,
+        api_instance_id: Optional[str] = None
     ) -> str:
         """Log a model prediction call with all relevant details.
         
@@ -51,6 +52,7 @@ class ModelCallLogger:
             caller_metadata: Optional metadata about the caller (IP, user-agent, etc.)
             execution_time_ms: Optional execution time in milliseconds
             error: Optional error message if prediction failed
+            api_instance_id: Optional API instance identifier (container name, hostname, etc.)
             
         Returns:
             Unique call ID for this prediction
@@ -61,6 +63,7 @@ class ModelCallLogger:
         log_entry = {
             "call_id": call_id,
             "timestamp": timestamp,
+            "api_instance_id": api_instance_id,
             "model_name": model_name,
             "input_variables": input_variables,
             "prediction_result": prediction_result if prediction_result is not None else None,

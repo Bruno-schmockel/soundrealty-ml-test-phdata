@@ -135,8 +135,12 @@ async def predict(request: PredictionRequest, http_request: Request):
         # Validate input data against model features
         prediction_service.validate_input(input_data)
         
-        # Make prediction with caller metadata
-        result = prediction_service.predict_from_dict(input_data, caller_metadata=caller_metadata)
+        # Make prediction with caller metadata and endpoint identification
+        result = prediction_service.predict_from_dict(
+            input_data, 
+            caller_metadata=caller_metadata,
+            api_instance_id="predict"
+        )
         return result
 
     except ValueError as e:
@@ -186,8 +190,12 @@ async def predict_minimal(request: PredictionMinimalRequest, http_request: Reque
         # Validate input data against model features
         basic_model_service.validate_input(input_data)
         
-        # Make prediction with caller metadata
-        result = basic_model_service.predict_from_dict(input_data, caller_metadata=caller_metadata)
+        # Make prediction with caller metadata and endpoint identification
+        result = basic_model_service.predict_from_dict(
+            input_data, 
+            caller_metadata=caller_metadata,
+            api_instance_id="predict-minimal"
+        )
         return result
 
     except ValueError as e:

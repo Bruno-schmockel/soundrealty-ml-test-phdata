@@ -82,6 +82,7 @@ class PredictionResponse(BaseModel):
     """Response model for prediction."""
     prediction: float = Field(..., description="Predicted home price in USD")
     model_name: str = Field(..., description="Name of the model used for prediction")
+    api_instance_id: str = Field(..., description="API instance identifier (endpoint and model)")
     call_id: str = Field(..., description="Unique identifier for this prediction call")
     
     model_config = ConfigDict(
@@ -89,6 +90,7 @@ class PredictionResponse(BaseModel):
             "example": {
                 "prediction": 425000.50,
                 "model_name": "added_features",
+                "api_instance_id": "predict-added_features",
                 "call_id": "550e8400-e29b-41d4-a716-446655440000"
             }
         }

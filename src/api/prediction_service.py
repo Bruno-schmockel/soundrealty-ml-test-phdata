@@ -244,7 +244,7 @@ class PredictionService:
                     "Type mismatch in input data:\n" + "\n".join(type_errors)
                 )
 
-    def predict_from_dict(self, input_dict: dict, caller_metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def predict_from_dict(self, input_dict: dict, caller_metadata: Optional[Dict[str, Any]] = None, api_instance_id: Optional[str] = None) -> Dict[str, Any]:
         """Make a prediction using a dictionary of input values.
         
         Assumes input has been validated. Extracts only required fields
@@ -254,6 +254,7 @@ class PredictionService:
         Args:
             input_dict: Dictionary containing all required input values (should be pre-validated)
             caller_metadata: Optional metadata about the caller (IP address, user agent, etc.)
+            api_instance_id: Optional API instance identifier (e.g., 'predict' or 'predict-minimal')
             
         Returns:
             Dictionary with prediction and metadata
@@ -286,11 +287,13 @@ class PredictionService:
             model_name=self.model_name,
             prediction_result=float(prediction),
             caller_metadata=caller_metadata,
-            execution_time_ms=execution_time_ms
+            execution_time_ms=execution_time_ms,
+            api_instance_id=api_instance_id
         )
         
         return {
             "prediction": float(prediction),
             "model_name": self.model_name,
+            "api_instance_id": api_instance_id,
             "call_id": call_id
         }

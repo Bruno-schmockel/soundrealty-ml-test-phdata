@@ -1,6 +1,7 @@
 # Project-specific directories
 .continue/
 logs/
+*.log
 
 # Python compiled files and directories
 *.pyc
