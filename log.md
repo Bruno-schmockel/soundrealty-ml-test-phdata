@@ -220,3 +220,7 @@ Will now add a database logging of the model calls so I can see the split in the
 # 2026/03/01 16:18 
 
 Got a simple log for the calls of the API for the model. Im drawing a line in hosting an actual DB to this project. For now. 
+
+# 2026/03/01 17:04
+
+Added a small CI/CD QoL with an github action that trains a new model.
