@@ -8,6 +8,9 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   train-model:
     runs-on: ubuntu-latest
@@ -52,6 +55,4 @@ jobs:
           git config --local user.name "GitHub Action"
           git add model/${{ steps.model_name.outputs.name }}/
           git commit -m "Add trained model: ${{ steps.model_name.outputs.name }}" || echo "No changes to commit"
-          git push "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git push
