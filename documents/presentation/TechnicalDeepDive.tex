@@ -6,6 +6,8 @@
 \usepackage{xcolor}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
 
 % Code styling
 \lstset{
@@ -32,7 +34,7 @@
 \begin{frame}
 \frametitle{Project Overview}
 \begin{itemize}
-    \item \textbf{Goal:} Deploy a KNN model for real-time home price predictions
+    \item \textbf{Goal:} Deploy a KNN model for home price predictions
     \item \textbf{Input Data:} 18 property features + zipcode demographics
     \item \textbf{Model:} K-Nearest Neighbors (k=5) with RobustScaler normalization
     \item \textbf{Stack:} FastAPI, Python, scikit-learn, Docker
@@ -41,25 +43,33 @@
 \end{itemize}
 \end{frame}
 
-% ============= Slide 2: Problem Statement =============
+% ============= Slide 1.5: Guidelines for Technical Deep Dive =============
 \begin{frame}
-\frametitle{Problem Statement}
-\textbf{Challenge:} Sound Realty needs to:
+\frametitle{Guidelines for developing the architecture and implementation}
 \begin{itemize}
-    \item Streamline home valuation process for King County, WA
-    \item Move from manual estimation to automated ML predictions
-    \item Iterate on models without downtime
-    \item Serve predictions at scale with reliability guarantees
+    \item \textbf{KISS:} Keep It Simple, Stupid - focus on core functionality. An MVP for a new client should prioritize reliability and maintainability over complex features.
+    \item \textbf{Input Data:} make validation robust, but no need for complex feature engineering
+    \item \textbf{Model:} Model improvement is a bonus, but focus on solid KNN implementation
+    \item \textbf{Architecture:} keep it modular and easy to test locally
+\end{itemize}
+\end{frame}
+
+% ============= Slide 2: BUILT ARCHITECTURE =============
+\begin{frame}
+\frametitle{Deployed Architecture Overview}
+
+\begin{center}
+\includegraphics[width=0.9\textwidth]{images/architecture_diagram.png}
+\end{center}
+
+\vspace{0.2cm}
+\small
+\begin{itemize}[leftmargin=0.3cm]
+    \item \textbf{Request Flow:} Client → Nginx → FastAPI → Model Selection
+    \item \textbf{Model Hot-Reload:} Environment variable (MODEL\_NAME) switches between variants
+    \item \textbf{Docker Deployment:} Port 8000 (FastAPI) | Port 80 (Nginx)
 \end{itemize}
 
-\vspace{0.5cm}
-\textbf{Constraints:}
-\begin{itemize}
-    \item Basic model already exists (numeric features only)
-    \item Need to integrate demographic data from external sources
-    \item Must support A/B testing of different model versions
-    \item Production monitoring \& logging required
-\end{itemize}
 \end{frame}
 
 % ============= Slide 3: Data Pipeline =============
@@ -94,7 +104,7 @@ merged = sales.merge(demographics, how='left', on='zipcode')
     \item \textbf{Interpretability:} Predictions based on $k$ nearest training samples
     \item \textbf{Non-parametric:} Captures complex non-linear relationships
     \item \textbf{No training phase:} Instantaneous retraining possible
-    \item \textbf{Baseline:} Good performance on housing datasets
+    \item \textbf{Baseline:} okay performance on housing datasets
 \end{itemize}
 
 \vspace{0.3cm}
@@ -323,35 +333,6 @@ MAPE & 23\% & 22\% & \% \\
 \end{itemize}
 \end{frame}
 
-% ============= Slide 12: Model Improvement Roadmap =============
-\begin{frame}
-\frametitle{Future Improvements \& Research Directions}
-
-\textbf{Short-term (Next Sprint):}
-\begin{itemize}
-    \item Ensemble models (voting between KNN, GB, Linear Regression)
-    \item Feature selection optimization (mutual information analysis)
-    \item Hyperparameter tuning (grid search for $k$ value)
-\end{itemize}
-
-\vspace{0.3cm}
-\textbf{Medium-term (Next Quarter):}
-\begin{itemize}
-    \item Gradient Boosting implementation for \textasciitilde5\% improvement
-    \item Online learning to adapt to market changes
-    \item Geographic clustering (different models per region)
-\end{itemize}
-
-\vspace{0.3cm}
-\textbf{Long-term (Architectural):}
-\begin{itemize}
-    \item Feature store integration (real-time feature updates)
-    \item Automated model retraining pipeline
-    \item Uncertainty quantification (confidence intervals)
-    \item Multi-objective optimization (minimize RMSE and underpricing)
-\end{itemize}
-\end{frame}
-
 % ============= Slide 13: Production Metrics =============
 \begin{frame}
 \frametitle{Production Monitoring Dashboard}
@@ -376,35 +357,6 @@ MAPE & 23\% & 22\% & \% \\
 
 \vspace{0.3cm}
 \textbf{Retraining Trigger:} Model drift detected (weekly comparison) or RMSE degrades
-\end{frame}
-
-% ============= Slide 14: Lessons Learned =============
-\begin{frame}
-\frametitle{Lessons Learned \& Best Practices}
-
-\textbf{What Worked Well:}
-\begin{enumerate}
-    \item Comprehensive logging from day 1 (enabling retrospective analysis)
-    \item Multiple model versions from the start (no breaking changes)
-    \item pytest coverage discipline (caught 90\% of integration issues)
-    \item Containerization (reproducible environments)
-\end{enumerate}
-
-\vspace{0.3cm}
-\textbf{Technical Best Practices Applied:}
-\begin{enumerate}
-    \item Separation of concerns (DataLoader, PredictionService, API)
-    \item Pydantic validation (type safety at boundary)
-    \item Graceful error handling \& structured logging
-    \item Stateless design (enables horizontal scaling)
-\end{enumerate}
-
-\vspace{0.3cm}
-\textbf{Would Do Differently:}
-\begin{itemize}
-    \item Earlier A/B testing framework (for online metrics)
-    \item Feature monitoring from start (for drift detection)
-\end{itemize}
 \end{frame}
 
 % ============= Slide 15: Technical Q&A =============
