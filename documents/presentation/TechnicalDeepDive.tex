@@ -59,18 +59,20 @@
 \frametitle{Deployed Architecture Overview}
 
 \begin{center}
-\includegraphics[width=0.9\textwidth]{images/architecture_diagram.png}
+\includegraphics[width=0.6\textwidth]{../images/current_architecture.png}
 \end{center}
 
-\vspace{0.2cm}
-\small
-\begin{itemize}[leftmargin=0.3cm]
-    \item \textbf{Request Flow:} Client → Nginx → FastAPI → Model Selection
-    \item \textbf{Model Hot-Reload:} Environment variable (MODEL\_NAME) switches between variants
-    \item \textbf{Docker Deployment:} Port 8000 (FastAPI) | Port 80 (Nginx)
-\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Scaling Architecture Overview}
+
+\begin{center}
+\includegraphics[width=0.6\textwidth]{../images/scalling_architecture.png}
+\end{center}
 
 \end{frame}
+
 
 % ============= Slide 3: Data Pipeline =============
 \begin{frame}[fragile]
