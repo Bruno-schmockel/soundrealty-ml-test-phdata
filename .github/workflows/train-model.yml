@@ -1,11 +1,7 @@
 name: Train Model with CI/CD
 
 on:
-  # Run on schedule (daily at 2 AM UTC)
-  schedule:
-    - cron: '0 2 * * *'
-  
-  # Allow manual trigger
+  # Scheduled trigger disabled — manual dispatch only
   workflow_dispatch:
 
 permissions:
